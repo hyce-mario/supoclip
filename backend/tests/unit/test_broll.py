@@ -447,7 +447,7 @@ async def test_ensure_broll_file_downloads_once(pexels_config, monkeypatch, tmp_
         return httpx.Response(200, content=video_bytes)
 
     _mock_pexels(monkeypatch, handler)
-    placement = {"pexels_id": 5, "width": 1080, "height": 1920, "file_url": "https://videos.example/a.mp4"}
+    placement = {"pexels_id": 5, "width": 1080, "height": 1920, "file_url": "https://videos.pexels.com/a.mp4"}
 
     first = await broll.ensure_broll_file(placement)
     second = await broll.ensure_broll_file(placement)
@@ -461,7 +461,7 @@ async def test_ensure_broll_file_downloads_once(pexels_config, monkeypatch, tmp_
 @pytest.mark.asyncio
 async def test_failed_download_leaves_nothing_behind(pexels_config, monkeypatch):
     _mock_pexels(monkeypatch, lambda request: httpx.Response(404))
-    placement = {"pexels_id": 6, "width": 1080, "height": 1920, "file_url": "https://videos.example/b.mp4"}
+    placement = {"pexels_id": 6, "width": 1080, "height": 1920, "file_url": "https://videos.pexels.com/b.mp4"}
 
     assert await broll.ensure_broll_file(placement) is None
     assert not any((Path(pexels_config.temp_dir) / "broll_cache").iterdir())
@@ -632,7 +632,7 @@ async def test_carrying_broll_never_fails_the_edit(tmp_path):
 @pytest.mark.asyncio
 async def test_a_download_that_is_not_a_video_is_discarded(pexels_config, monkeypatch):
     _mock_pexels(monkeypatch, lambda request: httpx.Response(200, content=b"<html>rate limited</html>"))
-    placement = {"pexels_id": 8, "width": 1080, "height": 1920, "file_url": "https://videos.example/c.mp4"}
+    placement = {"pexels_id": 8, "width": 1080, "height": 1920, "file_url": "https://videos.pexels.com/c.mp4"}
 
     assert await broll.ensure_broll_file(placement) is None
     assert not any((Path(pexels_config.temp_dir) / "broll_cache").iterdir())
@@ -775,3 +775,133 @@ def test_cutaway_from_coarse_timebase_footage_covers_its_whole_window(tmp_path):
     covered = [_pixel(output, 1.0 + i / 24) for i in range(29)]
     assert all(c[2] > 200 and c[0] < 60 for c in covered)
     assert _pixel(output, 2.30)[0] > 200
+
+
+# --- Pixabay fallback ------------------------------------------------------
+
+
+def _pixabay_hit(video_id, width=1080, height=1920, tags="coffee, cup, morning", duration=12):
+    return {
+        "id": video_id,
+        "pageURL": f"https://pixabay.com/videos/coffee-cup-{video_id}/",
+        "tags": tags,
+        "duration": duration,
+        "user": "Barista",
+        "videos": {
+            "large": {"url": f"https://cdn.pixabay.com/video/{video_id}_large.mp4", "width": width, "height": height, "thumbnail": "https://cdn.pixabay.com/t.jpg"},
+            "medium": {"url": f"https://cdn.pixabay.com/video/{video_id}_medium.mp4", "width": width * 2 // 3, "height": height * 2 // 3},
+            "small": {"url": "", "width": 0, "height": 0},
+            "tiny": {"url": "https://evil.example/x.mp4", "width": 10, "height": 20},
+        },
+    }
+
+
+@pytest.fixture
+def pixabay_config(monkeypatch, tmp_path):
+    config = SimpleNamespace(pexels_api_key=None, pixabay_api_key="pix-key", temp_dir=str(tmp_path))
+    monkeypatch.setattr(broll, "get_config", lambda: config)
+    monkeypatch.setattr(broll, "_search_cache", {})
+    monkeypatch.setattr(broll, "_rate_limited_until", 0.0)
+    return config
+
+
+def test_provider_prefers_pexels_then_pixabay(monkeypatch):
+    for keys, expected in (
+        ({"pexels_api_key": "p", "pixabay_api_key": "x"}, "pexels"),
+        ({"pexels_api_key": None, "pixabay_api_key": "x"}, "pixabay"),
+        ({"pexels_api_key": None, "pixabay_api_key": None}, None),
+    ):
+        monkeypatch.setattr(broll, "get_config", lambda keys=keys: SimpleNamespace(**keys))
+        assert broll.broll_provider() == expected
+        assert broll.broll_configured() is (expected is not None)
+
+
+async def test_search_falls_back_to_pixabay_and_normalizes(pixabay_config, monkeypatch):
+    calls = []
+
+    def handler(request):
+        calls.append(request)
+        assert request.url.host == "pixabay.com"
+        assert request.url.params["key"] == "pix-key"
+        return httpx.Response(200, json={"hits": [_pixabay_hit(i) for i in (1, 2, 3)]})
+
+    _mock_pexels(monkeypatch, handler)
+    videos = await search_pexels_videos("coffee  cup")
+    assert [v["id"] for v in videos] == [1, 2, 3]
+    video = videos[0]
+    assert video["provider"] == "pixabay"
+    assert {f["link"] for f in video["video_files"]} == {
+        "https://cdn.pixabay.com/video/1_large.mp4",
+        "https://cdn.pixabay.com/video/1_medium.mp4",
+    }
+    assert "coffee" in broll.footage_description(video)
+    footage = broll.footage_from_video(video, 1080, "portrait")
+    assert footage["provider"] == "pixabay"
+    assert footage["fileUrl"] == "https://cdn.pixabay.com/video/1_large.mp4"
+    await search_pexels_videos("Coffee cup")
+    assert len(calls) == 1
+
+
+async def test_pixabay_landscape_results_stay_usable_when_few_match(pixabay_config, monkeypatch):
+    hits = [_pixabay_hit(1), _pixabay_hit(2, width=1920, height=1080)]
+    _mock_pexels(monkeypatch, lambda request: httpx.Response(200, json={"hits": hits}))
+    videos = await broll.search_pixabay_videos("coffee", "portrait")
+    assert [v["id"] for v in videos] == [1, 2]
+    # Only the portrait one keeps its size; the landscape one can still be chosen (cropped to fill).
+    assert videos[1]["width"] == 0
+    assert choose_video(videos, 5, "portrait", used_ids={1})["id"] == 2
+
+
+async def test_pixabay_rate_limit_pauses_searches(pixabay_config, monkeypatch):
+    calls = []
+
+    def handler(request):
+        calls.append(request)
+        return httpx.Response(429, headers={"X-RateLimit-Reset": "30"})
+
+    _mock_pexels(monkeypatch, handler)
+    assert await search_pexels_videos("coffee") == []
+    assert await search_pexels_videos("mountain") == []
+    assert len(calls) == 1
+
+
+async def test_pixabay_footage_is_cached_apart_and_only_from_its_cdn(pixabay_config, monkeypatch):
+    entry = {"provider": "pixabay", "pexels_id": 7, "width": 1080, "height": 1920}
+    assert broll.broll_file_path(entry).name == "pixabay_7_1080x1920.mp4"
+    assert broll.broll_file_path({**entry, "provider": None}).name == "pexels_7_1080x1920.mp4"
+    with pytest.raises(ValueError):
+        broll.broll_file_path({**entry, "provider": "elsewhere"})
+
+    downloads = []
+
+    async def fake_download(url, destination):
+        downloads.append(url)
+        return False
+
+    monkeypatch.setattr(broll, "_download", fake_download)
+    assert await broll.ensure_broll_file({**entry, "file_url": "https://videos.pexels.com/x.mp4"}) is None
+    assert await broll.ensure_broll_file({**entry, "file_url": "https://evil.example/x.mp4"}) is None
+    assert downloads == []
+
+
+def test_pixabay_placement_round_trips_through_the_editor():
+    placement = {
+        "start": 3.0,
+        "duration": 2.0,
+        "query": "coffee",
+        "provider": "pixabay",
+        "pexels_id": 7,
+        "pexels_url": "https://pixabay.com/videos/coffee-7/",
+        "file_url": "https://cdn.pixabay.com/video/7_large.mp4",
+        "width": 1080,
+        "height": 1920,
+        "footage_duration": 12.0,
+    }
+    clip = broll.placement_to_editor_clip(placement, 0, 30.0)
+    assert clip["footage"]["provider"] == "pixabay"
+    assert clip["id"] == "broll-0-pixabay-7"
+    assert broll.placement_to_editor_clip({**placement, "provider": "pexels"}, 0, 30.0) is None
+    back = broll.editor_piece_to_placement(
+        {"start": 3.0, "duration": 2.0, "footage": clip["footage"], "query": "coffee"}
+    )
+    assert back["provider"] == "pixabay" and back["file_url"] == placement["file_url"]

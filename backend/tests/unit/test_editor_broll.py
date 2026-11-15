@@ -441,3 +441,15 @@ async def test_minimum_cutaway_saves_through_the_api(client):
     state = (await http.get("/tasks/task/clips/clip/editor")).json()
     assert state["draft"]["revision"] == 1
     assert state["draft"]["document"]["broll"][0]["end"] == 1.2
+
+
+def test_pixabay_footage_must_come_from_its_own_cdn():
+    pixabay = {**FOOTAGE, "provider": "pixabay", "fileUrl": "https://cdn.pixabay.com/video/7_large.mp4"}
+    doc = {"segments": [{"id": "s", "start": 0, "end": 2}], "broll": [{"id": "b", "start": 0, "end": 1, "footage": pixabay}]}
+    footage = EditDocument.model_validate(doc).broll[0].footage
+    assert footage.key.startswith("pixabay:")
+    for provider, url in (("pixabay", "https://videos.pexels.com/a.mp4"), ("pexels", "https://cdn.pixabay.com/a.mp4")):
+        with pytest.raises(ValidationError):
+            EditDocument.model_validate(
+                {**doc, "broll": [{"id": "b", "start": 0, "end": 1, "footage": {**FOOTAGE, "provider": provider, "fileUrl": url}}]}
+            )

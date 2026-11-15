@@ -36,9 +36,16 @@ interface Props {
 
 const sortByStart = (clips: BRollClip[]) => [...clips].sort((a, b) => a.start - b.start);
 
+const STOCK_PROVIDERS: Record<string, { name: string; site: string }> = {
+  pexels: { name: "Pexels", site: "https://www.pexels.com" },
+  pixabay: { name: "Pixabay", site: "https://pixabay.com" },
+};
+const stockProvider = (provider?: string | null) => STOCK_PROVIDERS[provider ?? ""] ?? STOCK_PROVIDERS.pexels;
+
 export function BRollPanel({ doc, asset, endpoint, time, seek, update, selected, select }: Props) {
   const t = useTranslations("editor");
   const [available, setAvailable] = useState<boolean | null>(null);
+  const [provider, setProvider] = useState<string>("pexels");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<BRollFootage[]>([]);
   const [searched, setSearched] = useState("");
@@ -53,7 +60,11 @@ export function BRollPanel({ doc, asset, endpoint, time, seek, update, selected,
     let cancelled = false;
     fetch("/api/broll/status")
       .then((r) => (r.ok ? r.json() : null))
-      .then((data) => !cancelled && setAvailable(data?.configured === true))
+      .then((data) => {
+        if (cancelled) return;
+        setAvailable(data?.configured === true);
+        if (typeof data?.provider === "string") setProvider(data.provider);
+      })
       .catch(() => !cancelled && setAvailable(false));
     return () => {
       cancelled = true;
@@ -69,7 +80,10 @@ export function BRollPanel({ doc, asset, endpoint, time, seek, update, selected,
     setSearching(true);
     try {
       const params = new URLSearchParams({ q, page: String(next), aspect: doc.framing.aspect });
-      const data = await editorRequest<{ results: BRollFootage[] }>(`${endpoint}/broll/search?${params}`);
+      const data = await editorRequest<{ results: BRollFootage[]; provider?: string | null }>(
+        `${endpoint}/broll/search?${params}`,
+      );
+      if (data.provider) setProvider(data.provider);
       setResults((current) => (next === 1 ? data.results : [...current, ...data.results]));
       setSearched(q);
       setPage(next);
@@ -224,10 +238,11 @@ export function BRollPanel({ doc, asset, endpoint, time, seek, update, selected,
               <p className="text-muted-foreground">
                 {t.rich("broll.credit", {
                   name: clip.footage.credit || t("broll.creditUnknown"),
+                  provider: stockProvider(clip.footage.provider).name,
                   link: (chunks) => (
                     <a
                       className="underline underline-offset-2 hover:text-foreground"
-                      href={clip.footage.pageUrl || "https://www.pexels.com"}
+                      href={clip.footage.pageUrl || stockProvider(clip.footage.provider).site}
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -360,8 +375,9 @@ export function BRollPanel({ doc, asset, endpoint, time, seek, update, selected,
         )}
         <p className="text-[11px] text-muted-foreground">
           {t.rich("broll.attribution", {
+            provider: stockProvider(provider).name,
             link: (chunks) => (
-              <a className="underline underline-offset-2" href="https://www.pexels.com" target="_blank" rel="noreferrer">
+              <a className="underline underline-offset-2" href={stockProvider(provider).site} target="_blank" rel="noreferrer">
                 {chunks}
               </a>
             ),

@@ -1,5 +1,6 @@
 """
-B-roll for generated clips: plan stock-footage cutaways and source them from Pexels.
+B-roll for generated clips: plan stock-footage cutaways and source them from Pexels
+(or Pixabay when only ``PIXABAY_API_KEY`` is set).
 
 Each clip gets its own plan. The model reads the clip's word-timed transcript
 and picks the moments where the speaker names something filmable; the cutaways
@@ -30,6 +31,16 @@ logger = logging.getLogger(__name__)
 
 PEXELS_SEARCH_URL = "https://api.pexels.com/videos/search"
 PEXELS_VIDEO_URL = "https://api.pexels.com/videos/videos/{id}"
+PIXABAY_VIDEOS_URL = "https://pixabay.com/api/videos/"
+# The only hosts footage is ever downloaded from, per provider.
+FOOTAGE_HOSTS = {
+    "pexels": "https://videos.pexels.com/",
+    "pixabay": "https://cdn.pixabay.com/",
+}
+# Pixabay has no orientation filter for videos (most are landscape), so a
+# search reads more results and puts the right orientation first.
+PIXABAY_RESULTS_PER_QUERY = 50
+PIXABAY_MIN_ORIENTED = 3
 
 # Cutaway placement. The opening seconds stay on the speaker (and the hook
 # title), and the clip ends on the speaker too.
@@ -63,8 +74,27 @@ _rate_limited_until = 0.0
 _download_locks: Dict[str, asyncio.Lock] = {}
 
 
+def broll_provider() -> Optional[str]:
+    """The stock provider searches go to: Pexels when its key is set, else Pixabay."""
+    config = get_config()
+    if config.pexels_api_key:
+        return "pexels"
+    if getattr(config, "pixabay_api_key", None):
+        return "pixabay"
+    return None
+
+
 def broll_configured() -> bool:
-    return bool(get_config().pexels_api_key)
+    return broll_provider() is not None
+
+
+def footage_provider(url: Any) -> Optional[str]:
+    """The provider whose CDN serves ``url``, or None for any other host."""
+    url = str(url or "")
+    for provider, host in FOOTAGE_HOSTS.items():
+        if url.startswith(host):
+            return provider
+    return None
 
 
 def broll_cache_dir() -> Path:
@@ -89,6 +119,8 @@ async def search_pexels_videos(
     """
     global _rate_limited_until
     api_key = get_config().pexels_api_key
+    if not api_key and broll_provider() == "pixabay":
+        return await search_pixabay_videos(query, orientation, page=page)
     query = " ".join((query or "").split())[:80]
     if not api_key or not query:
         return []
@@ -131,6 +163,118 @@ async def search_pexels_videos(
         _search_cache.pop(next(iter(_search_cache)))
     _search_cache[key] = (time.time(), videos)
     return videos
+
+
+# --------------------------------------------------------------------------
+# Pixabay (fallback provider), normalized to the Pexels video shape
+# --------------------------------------------------------------------------
+
+
+def pixabay_to_video(hit: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """A Pixabay video hit in the shape the rest of this module reads (Pexels')."""
+    try:
+        video_id = int(hit["id"])
+    except (KeyError, TypeError, ValueError):
+        return None
+    renditions = [r for r in (hit.get("videos") or {}).values() if isinstance(r, dict)]
+    files = []
+    for rendition in renditions:
+        if footage_provider(rendition.get("url")) != "pixabay":
+            continue
+        try:
+            width, height = int(rendition.get("width") or 0), int(rendition.get("height") or 0)
+        except (TypeError, ValueError):
+            continue
+        if width > 0 and height > 0:
+            files.append({"link": rendition["url"], "width": width, "height": height, "file_type": "video/mp4"})
+    if not files:
+        return None
+    largest = max(files, key=lambda f: f["width"] * f["height"])
+    thumbnail = next((str(r["thumbnail"]) for r in renditions if r.get("thumbnail")), "")
+    return {
+        "provider": "pixabay",
+        "id": video_id,
+        "url": str(hit.get("pageURL") or ""),
+        "duration": hit.get("duration") or 0,
+        "width": largest["width"],
+        "height": largest["height"],
+        "tags": [tag.strip() for tag in str(hit.get("tags") or "").split(",") if tag.strip()],
+        "image": thumbnail,
+        "user": {"name": str(hit.get("user") or "")},
+        "video_files": files,
+    }
+
+
+async def _pixabay_get(params: Dict[str, Any]) -> Optional[List[Dict[str, Any]]]:
+    """Pixabay video API hits for ``params``; None on failure or while rate limited."""
+    global _rate_limited_until
+    api_key = getattr(get_config(), "pixabay_api_key", None)
+    if not api_key or time.time() < _rate_limited_until:
+        return None
+    try:
+        async with httpx.AsyncClient(timeout=HTTP_TIMEOUT) as client:
+            response = await client.get(PIXABAY_VIDEOS_URL, params={"key": api_key, **params})
+    except httpx.HTTPError as exc:
+        logger.warning("Pixabay request failed: %s", type(exc).__name__)
+        return None
+    if response.status_code == 429:
+        # Pixabay's reset header is seconds remaining, not a timestamp.
+        try:
+            wait = max(1.0, float(response.headers.get("X-RateLimit-Reset") or 60))
+        except ValueError:
+            wait = 60.0
+        _rate_limited_until = time.time() + wait
+        logger.warning("Pixabay rate limit reached; B-roll paused until %s", int(_rate_limited_until))
+        return None
+    if response.status_code != 200:
+        logger.warning("Pixabay returned HTTP %s", response.status_code)
+        return None
+    try:
+        hits = response.json().get("hits", [])
+    except (ValueError, AttributeError):
+        return None
+    return [hit for hit in hits if isinstance(hit, dict)]
+
+
+async def search_pixabay_videos(
+    query: str,
+    orientation: str = "portrait",
+    per_page: int = PIXABAY_RESULTS_PER_QUERY,
+    page: int = 1,
+) -> List[Dict[str, Any]]:
+    """Pixabay results for ``query`` as Pexels-shaped videos; empty on any failure.
+
+    Results in ``orientation`` come first. When fewer than
+    ``PIXABAY_MIN_ORIENTED`` match, the rest follow without their top-level
+    size, so ``choose_video`` may still pick one (the renderer crops to fill).
+    """
+    query = " ".join((query or "").split())[:80]
+    if not query:
+        return []
+    key = ("pixabay", query.lower(), orientation, per_page, page)
+    cached = _search_cache.get(key)
+    if cached and time.time() - cached[0] < SEARCH_CACHE_TTL_SECONDS:
+        return cached[1]
+    hits = await _pixabay_get(
+        {"q": query, "video_type": "film", "safesearch": "true", "per_page": max(3, min(200, per_page)), "page": page}
+    )
+    if hits is None:
+        return []
+    videos = [video for video in map(pixabay_to_video, hits) if video]
+    oriented = [v for v in videos if _matches_orientation(v["width"], v["height"], orientation)]
+    if len(oriented) < PIXABAY_MIN_ORIENTED:
+        oriented_ids = {v["id"] for v in oriented}
+        oriented += [{**v, "width": 0, "height": 0} for v in videos if v["id"] not in oriented_ids]
+    if len(_search_cache) >= SEARCH_CACHE_MAX_ENTRIES:
+        _search_cache.pop(next(iter(_search_cache)))
+    _search_cache[key] = (time.time(), oriented)
+    return oriented
+
+
+async def fetch_pixabay_video(video_id: int) -> Optional[Dict[str, Any]]:
+    """One Pixabay video by id, Pexels-shaped (to re-resolve a rendition's link)."""
+    hits = await _pixabay_get({"id": int(video_id)})
+    return pixabay_to_video(hits[0]) if hits else None
 
 
 def _matches_orientation(width: int, height: int, orientation: str) -> bool:
@@ -306,7 +450,7 @@ def footage_description(video: Dict[str, Any]) -> str:
     tags = video.get("tags")
     if isinstance(tags, (list, tuple)):
         parts += [str(tag.get("name") if isinstance(tag, dict) else tag) for tag in tags if tag]
-    match = re.search(r"/video/([^/?#]+)", str(video.get("url") or ""))
+    match = re.search(r"/videos?/([^/?#]+)", str(video.get("url") or ""))
     if match:
         parts.append(re.sub(r"-?\d+$", "", match.group(1)).replace("-", " "))
     return " ".join(part for part in parts if part.strip())
@@ -360,8 +504,11 @@ def footage_mismatch(video: Dict[str, Any], query: str, context: str = "") -> Op
 
 
 def broll_file_path(entry: Dict[str, Any]) -> Path:
+    provider = entry.get("provider") or "pexels"
+    if provider not in FOOTAGE_HOSTS:
+        raise ValueError(f"unknown B-roll provider {provider!r}")
     return broll_cache_dir() / (
-        f"pexels_{int(entry['pexels_id'])}_{int(entry['width'])}x{int(entry['height'])}.mp4"
+        f"{provider}_{int(entry['pexels_id'])}_{int(entry['width'])}x{int(entry['height'])}.mp4"
     )
 
 
@@ -379,7 +526,8 @@ def prune_broll_cache(
         return
     cutoff = time.time() - max_age_seconds
     kept = []
-    for path in directory.glob("pexels_*.mp4"):
+    paths = [path for provider in FOOTAGE_HOSTS for path in directory.glob(f"{provider}_*.mp4")]
+    for path in paths:
         try:
             stat = path.stat()
             if stat.st_mtime < cutoff:
@@ -436,7 +584,10 @@ async def ensure_broll_file(entry: Dict[str, Any]) -> Optional[Path]:
         if path.is_file() and path.stat().st_size > 0:
             path.touch()
             return path
-        if not entry.get("file_url") or not await _download(entry["file_url"], path):
+        file_url = entry.get("file_url")
+        if not file_url or footage_provider(file_url) != (entry.get("provider") or "pexels"):
+            return None
+        if not await _download(file_url, path):
             return None
         # A 200 can still be an error page or a truncated file, and one bad
         # input would fail the whole clip render.
@@ -592,7 +743,7 @@ async def _source_cue(
             "start": cue["start"],
             "duration": cue["duration"],
             "query": query,
-            "provider": "pexels",
+            "provider": video.get("provider") or "pexels",
             "pexels_id": int(video["id"]),
             "pexels_url": video.get("url"),
             "file_url": chosen["link"],
@@ -713,9 +864,10 @@ def shift_broll_placements(
 
 
 def footage_from_video(video: Dict[str, Any], target_short_side: int, orientation: str) -> Optional[Dict[str, Any]]:
-    """Editor footage (``BRollFootage`` fields) for a Pexels video, or None."""
+    """Editor footage (``BRollFootage`` fields) for a stock video, or None."""
+    provider = video.get("provider") or "pexels"
     chosen = pick_video_file(video, target_short_side, orientation)
-    if not chosen or not str(chosen["link"]).startswith("https://videos.pexels.com/"):
+    if not chosen or footage_provider(chosen["link"]) != provider:
         return None
     try:
         duration = float(video.get("duration") or 0)
@@ -725,7 +877,7 @@ def footage_from_video(video: Dict[str, Any], target_short_side: int, orientatio
         return None
     user = video.get("user") or {}
     return {
-        "provider": "pexels",
+        "provider": provider,
         "id": int(video["id"]),
         "width": chosen["width"],
         "height": chosen["height"],
@@ -772,7 +924,9 @@ async def fetch_pexels_video(video_id: int) -> Optional[Dict[str, Any]]:
 
 async def ensure_footage_file(footage: Dict[str, Any]) -> Optional[Path]:
     """Local copy of editor footage; re-resolves the link if the stored one fails."""
+    provider = footage.get("provider") or "pexels"
     entry = {
+        "provider": provider,
         "pexels_id": footage["id"],
         "width": footage["width"],
         "height": footage["height"],
@@ -781,13 +935,16 @@ async def ensure_footage_file(footage: Dict[str, Any]) -> Optional[Path]:
     path = await ensure_broll_file(entry)
     if path is not None:
         return path
-    video = await fetch_pexels_video(int(footage["id"]))
+    if provider not in FOOTAGE_HOSTS:
+        return None
+    fetch = fetch_pixabay_video if provider == "pixabay" else fetch_pexels_video
+    video = await fetch(int(footage["id"]))
     for item in (video or {}).get("video_files") or []:
         link = str(item.get("link") or "")
         if (
             item.get("width") == footage["width"]
             and item.get("height") == footage["height"]
-            and link.startswith("https://videos.pexels.com/")
+            and footage_provider(link) == provider
         ):
             return await ensure_broll_file({**entry, "file_url": link})
     return None
@@ -810,10 +967,12 @@ def placement_to_editor_clip(placement: Dict[str, Any], index: int, clip_duratio
         fade_in = placement.get("fade_in", True) is not False
         fade_out = placement.get("fade_out", True) is not False
         minimum = BROLL_MIN_SECONDS if fade_in and fade_out else BROLL_CONTINUATION_MIN_SECONDS
-        if end - start < minimum - TIME_EPSILON or not file_url.startswith("https://videos.pexels.com/"):
+        provider = placement.get("provider") or "pexels"
+        if end - start < minimum - TIME_EPSILON or footage_provider(file_url) != provider:
             return None
+        id_prefix = "" if provider == "pexels" else f"{provider}-"
         return {
-            "id": f"broll-{index}-{int(placement['pexels_id'])}",
+            "id": f"broll-{index}-{id_prefix}{int(placement['pexels_id'])}",
             "start": round(start, 3),
             "end": round(end, 3),
             "offset": round(offset, 3),
@@ -822,7 +981,7 @@ def placement_to_editor_clip(placement: Dict[str, Any], index: int, clip_duratio
             "fadeOut": fade_out,
             "fadeDuration": placement.get("fade_duration"),
             "footage": {
-                "provider": "pexels",
+                "provider": provider,
                 "id": int(placement["pexels_id"]),
                 "width": int(placement["width"]),
                 "height": int(placement["height"]),
@@ -846,7 +1005,7 @@ def editor_piece_to_placement(piece: Dict[str, Any]) -> Dict[str, Any]:
         "duration": round(piece["duration"], 3),
         "footage_offset": round(piece.get("offset") or 0.0, 3),
         "query": piece.get("query") or "",
-        "provider": "pexels",
+        "provider": footage.get("provider") or "pexels",
         "pexels_id": footage["id"],
         "pexels_url": footage.get("pageUrl"),
         "file_url": footage["fileUrl"],

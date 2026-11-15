@@ -57,9 +57,9 @@ export interface Effects {
   blur: number;
   hue: number;
 }
-/** A Pexels video rendition; the server only downloads from Pexels' CDN. */
+/** A stock video rendition; the server only downloads from the provider's CDN. */
 export interface BRollFootage {
-  provider: "pexels";
+  provider: "pexels" | "pixabay";
   id: number;
   width: number;
   height: number;
@@ -439,10 +439,13 @@ export const brollMinimum = (clip: BRollClip) =>
 export const brollFadeDuration = (clip: BRollClip) =>
   clip.fadeDuration ?? Math.min(BROLL_FADE_SECONDS, (clip.end - clip.start) / 3);
 export const brollOf = (doc: EditDocument) => doc.broll ?? [];
+const providerPrefix = (footage: BRollFootage) =>
+  footage.provider && footage.provider !== "pexels" ? `${footage.provider}:` : "";
 export const footageKey = (footage: BRollFootage) =>
-  `${footage.id}/${footage.width}x${footage.height}`;
+  `${providerPrefix(footage)}${footage.id}/${footage.width}x${footage.height}`;
 export const footageUrl = (endpoint: string, footage: BRollFootage) =>
-  `${endpoint}/broll/footage/${footage.id}/${footage.width}x${footage.height}.mp4`;
+  `${endpoint}/broll/footage/${footage.id}/${footage.width}x${footage.height}.mp4` +
+  (footage.provider && footage.provider !== "pexels" ? `?provider=${footage.provider}` : "");
 
 /** The B-roll clip on screen at a source time, if any. */
 export function brollAt(doc: EditDocument, sourceTime: number) {
