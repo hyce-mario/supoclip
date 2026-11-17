@@ -6,6 +6,11 @@ Add a line here when a pull request changes something a user can see. Use **New*
 
 ## 2026-11-16
 
+- **New:** A Transcript view on each video shows everything that was said next to the video. Click a word to play from it, select a phrase, sentence or paragraph, and press Create clip: it renders with your usual captions and settings and joins the video's clips, without using any minutes. ([#426](https://github.com/FujiwaraChoki/supoclip/pull/426))
+- **New:** Find moments with AI in the transcript: pick Viral, Quotes, Stories, Advice or Hot takes, or describe what you want, such as "moments about money". The moments are highlighted in the transcript and listed beside it, ready to turn into clips. ([#426](https://github.com/FujiwaraChoki/supoclip/pull/426))
+- **New:** Background music in the clip studio. Add a track from the music library or upload your own, then set its volume, fades and start point on the new Music lane. Music gets quieter automatically while someone speaks, and sounds the same in the preview and the export. ([#426](https://github.com/FujiwaraChoki/supoclip/pull/426))
+- **Improved:** When Pexels has no B-roll for a moment, SupoClip looks on Pixabay too. ([#426](https://github.com/FujiwaraChoki/supoclip/pull/426))
+
 - **Improved:** Accounts can process two videos at once, reducing waits when several videos are queued. ([#418](https://github.com/FujiwaraChoki/supoclip/pull/418))
 
 - **Under the hood:** Hosted deployments can switch new requests to a ready frontend and API while uploads and downloads on the previous release finish. ([#412](https://github.com/FujiwaraChoki/supoclip/pull/412))
