@@ -149,7 +149,11 @@ PostgreSQL 15. Schema in `init.sql`. Mixed naming conventions:
 | `src/workflows/` | Workflows (series, topic, recap, trailer): contracts, options/gate, units, outline, planners, solvers |
 | `src/services/ai_edit_service.py` | Studio AI editing: Sonnet 5.5 plans typed operations, applied and validated here |
 | `src/workers/ai_worker.py` | Light ARQ worker for AI edits (`supoclip_ai` queue, own container) |
-| `src/broll.py` | Pexels API B-roll integration |
+| `src/broll.py` | Pexels API B-roll integration (Pixabay fallback) |
+| `src/transcript_reader.py`, `src/api/routes/transcript.py` | Task page Transcript view: reader data, source media, clips from a range, AI moments |
+| `src/services/range_clip_service.py` | `create_range_clip` worker job: renders a transcript selection as a new clip |
+| `src/services/moments_service.py` | `find_moments_job` on the AI worker: AI moment search in the transcript |
+| `src/editor_music.py`, `src/music_library.py`, `src/api/routes/music.py` | Studio background music: library, uploads, ducking and the export mix |
 | `src/caption_templates.py` | Caption template system |
 | `src/config.py` | Environment variable configuration |
 | `src/social/` | Social publishing providers (YouTube, TikTok, Instagram): OAuth, upload, metrics |
@@ -313,6 +317,7 @@ REDIS_PORT=6379                      # Default: 6379
 QUEUED_TASK_TIMEOUT_SECONDS=180      # Fail-safe for stuck tasks
 UPLOAD_COPY_WAIT_SECONDS=1800        # Worker on another machine: wait for an upload to reach the bucket
 AI_EDIT_DAILY_LIMIT=150              # Studio AI edits per user per day (needs ANTHROPIC_API_KEY)
+MOMENTS_DAILY_LIMIT=50               # Transcript reader AI moment searches per user per day
 TEMP_DIR=/tmp                        # Uploads, caches, renders; per machine when MEDIA_STORAGE=s3
 DATABASE_URL=postgresql+asyncpg://...
 BETTER_AUTH_SECRET=...               # Frontend auth secret
@@ -393,6 +398,17 @@ undo history only for the last few saved clips.
 AI worker → Claude Sonnet 5.5 returns typed operations (`keep_ranges`, `remove_words`, `set`, `add_broll`, ...) →
 `apply_plan` clamps and validates → the browser applies the result as one undoable change (never over edits made
 meanwhile). Keep the output schema free of optional fields: the API rejects schemas whose grammar is too large.
+
+### Transcript reader and studio music
+
+The task page's **Transcript** view (`?view=transcript`, owner only, after processing) shows the whole source
+transcript beside the source video. Selecting text and pressing **Create clip** posts
+`POST /tasks/{id}/clips/from-range` → `create_range_clip` on the video worker, which renders the exact range with the
+task's settings and appends it (no minutes charged). **Find moments with AI** posts `POST /tasks/{id}/moments` →
+`find_moments_job` on the AI worker (presets or a request, optional range; `MOMENTS_DAILY_LIMIT`, default 50/day),
+results snapped to whole sentences. The clip studio's Audio tab and **Music** lane add background music from
+`backend/music/` or the creator's uploads (`/music/*`), on the edit timeline, ducked under speech by one gain curve
+shared by `editor_music.py` and `lib/editor/music.ts`. Details: `docs/transcript-reader.md`.
 
 ### Workflows (series, topic clips, recap, trailer)
 

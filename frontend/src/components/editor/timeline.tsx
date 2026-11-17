@@ -15,8 +15,10 @@ import {
   VolumeX,
   ZoomIn,
   ZoomOut,
+  Music,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { musicOf, placeMusic } from "@/lib/editor/music";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
@@ -64,6 +66,10 @@ interface Props {
   addBroll?: (time: number) => void;
   /** Seek for B-roll, which may sit in another segment. */
   seekBroll?: (time: number) => void;
+  musicId: string | null;
+  selectMusic: (id: string | null) => void;
+  /** Open the music panel to add a track. */
+  addMusic?: () => void;
 }
 
 const MIN_SEGMENT = 0.04;
@@ -73,6 +79,7 @@ const TRACK = {
   captions: "h-7",
   hook: "h-7",
   audio: "h-8",
+  music: "h-8",
 };
 
 /** Ruler label: whole seconds as m:ss, half seconds with one decimal. */
@@ -107,6 +114,9 @@ export function Timeline({
   brollId,
   selectBroll,
   addBroll,
+  musicId,
+  selectMusic,
+  addMusic,
 }: Props) {
   const t = useTranslations("editor");
   const [zoom, setZoom] = useState(1);
@@ -384,6 +394,7 @@ export function Timeline({
               </button>
             ) : undefined,
           )}
+          {header(<Music className="size-4" />, t("timeline.tracks.music"), TRACK.music)}
         </div>
         <div ref={scroller} className="min-w-0 flex-1 overflow-x-auto overflow-y-hidden">
           <div ref={lanes} className="relative space-y-1" style={{ width: `${zoom * 100}%` }}>
@@ -518,6 +529,17 @@ export function Timeline({
                   );
                 })}
             </div>
+            <MusicLane
+              doc={doc}
+              total={total}
+              selected={musicId}
+              select={selectMusic}
+              seekOut={seekOut}
+              update={update}
+              add={addMusic}
+              at={at}
+              secondsPerPixel={secondsPerPixel}
+            />
             <div aria-hidden className="pointer-events-none absolute inset-y-0 z-20 w-0.5 -translate-x-1/2 rounded-full bg-foreground" style={{ left: pct(playhead) }}>
               <div className="absolute top-1 left-1/2 size-3 -translate-x-1/2 rounded-full bg-foreground ring-2 ring-background" />
             </div>
@@ -677,6 +699,131 @@ function BRollTrack({
       {pieces.length === 0 && (
         <span className="pointer-events-none absolute inset-0 flex items-center px-2.5 text-[11px] text-muted-foreground">
           {t("broll.laneEmpty")}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/** Background music on the edit timeline: drag to move, drag an edge to trim. */
+function MusicLane({
+  doc,
+  total,
+  selected,
+  select,
+  seekOut,
+  update,
+  add,
+  at,
+  secondsPerPixel,
+}: {
+  doc: EditDocument;
+  total: number;
+  selected: string | null;
+  select: (id: string | null) => void;
+  seekOut: (time: number) => void;
+  update: Props["update"];
+  add?: () => void;
+  at: (clientX: number) => number;
+  secondsPerPixel: () => number;
+}) {
+  const t = useTranslations("editor");
+  const pieces = musicOf(doc);
+  const drag = useRef<{
+    id: string;
+    mode: "move" | "start" | "end";
+    x: number;
+    piece: (typeof pieces)[number];
+    group: string;
+    scale: number;
+    moved: boolean;
+  } | null>(null);
+  const laneRef = useRef<HTMLDivElement>(null);
+  const pct = (seconds: number) => `${(seconds / total) * 100}%`;
+  const begin = (e: React.PointerEvent, piece: (typeof pieces)[number], mode: "move" | "start" | "end") => {
+    e.stopPropagation();
+    select(piece.id);
+    drag.current = { id: piece.id, mode, x: e.clientX, piece, group: `gesture:${uid()}`, scale: secondsPerPixel(), moved: false };
+    laneRef.current?.setPointerCapture(e.pointerId);
+  };
+  const move = (e: React.PointerEvent) => {
+    const d = drag.current;
+    if (!d) return;
+    if (!(e.buttons & 1)) {
+      drag.current = null;
+      return;
+    }
+    if (Math.abs(e.clientX - d.x) > 2) d.moved = true;
+    if (!d.moved) return;
+    const placed = placeMusic(d.piece, d.mode, (e.clientX - d.x) * d.scale, total);
+    update((current) => ({ ...current, music: musicOf(current).map((p) => (p.id === d.id ? placed : p)) }), d.group);
+  };
+  const end = (e: React.PointerEvent) => {
+    const d = drag.current;
+    drag.current = null;
+    if (d && !d.moved) seekOut(at(e.clientX));
+  };
+  return (
+    <div
+      role="group"
+      aria-label={t("music.laneLabel")}
+      data-tour="editor-music-lane"
+      ref={laneRef}
+      onPointerMove={move}
+      onPointerUp={end}
+      onPointerCancel={() => (drag.current = null)}
+      onLostPointerCapture={() => (drag.current = null)}
+      className={cn("relative cursor-copy rounded-lg", TRACK.music, pieces.length === 0 && "bg-stone-50 dark:bg-stone-900/50")}
+      onClick={(e) => {
+        if (e.target !== e.currentTarget) return;
+        select(null);
+        seekOut(at(e.clientX));
+        add?.();
+      }}
+    >
+      {pieces.map((piece) => (
+        <div
+          key={piece.id}
+          role="button"
+          tabIndex={0}
+          aria-pressed={piece.id === selected}
+          aria-label={t("music.pieceLabel", {
+            title: piece.track.title || t("music.untitled"),
+            start: timecode(piece.start),
+            end: timecode(piece.end),
+          })}
+          className={cn(
+            "absolute inset-y-0 cursor-grab touch-none overflow-hidden rounded-lg bg-violet-200 outline-none active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-ring dark:bg-violet-950",
+            piece.id === selected && "ring-2 ring-violet-500",
+          )}
+          style={{ left: pct(piece.start), width: pct(Math.max(0.05, Math.min(piece.end, total) - piece.start)) }}
+          onPointerDown={(e) => begin(e, piece, "move")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              select(piece.id);
+              seekOut(piece.start + 0.001);
+            }
+          }}
+        >
+          <span className="pointer-events-none flex items-center gap-1 truncate px-2 text-[11px] leading-8 font-medium text-violet-900 dark:text-violet-100">
+            <Music className="size-3 shrink-0" />
+            {piece.track.title || t("music.untitled")}
+            <span className="tabular-nums opacity-70">{Math.round(piece.volume * 100)}%</span>
+          </span>
+          {(["start", "end"] as const).map((edge) => (
+            <span
+              key={edge}
+              aria-hidden
+              className={cn("absolute inset-y-0 w-2 cursor-ew-resize hover:bg-white/40", edge === "start" ? "left-0" : "right-0")}
+              onPointerDown={(e) => begin(e, piece, edge)}
+            />
+          ))}
+        </div>
+      ))}
+      {pieces.length === 0 && (
+        <span className="pointer-events-none absolute inset-0 flex items-center px-2.5 text-[11px] text-muted-foreground">
+          {t("music.laneEmpty")}
         </span>
       )}
     </div>

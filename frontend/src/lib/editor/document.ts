@@ -105,6 +105,31 @@ export interface EditDocument {
   captionTransforms?: Record<string, CaptionTransform>;
   /** Absent on drafts cached before the editor had B-roll. */
   broll?: BRollClip[];
+  /** Background music on the edit timeline; absent before the editor had music. */
+  music?: MusicClip[];
+  /** Lower the music under speech (default on). */
+  musicDuck?: boolean;
+}
+/** A track from the built-in library or the creator's uploads. */
+export interface MusicTrackRef {
+  source: "library" | "upload";
+  id: string;
+  title: string;
+  duration: number;
+}
+/** Music from `start` to `end` in edit (output) seconds; cuts never chop it. */
+export interface MusicClip {
+  id: string;
+  start: number;
+  end: number;
+  /** Where in the track it begins. */
+  offset: number;
+  /** Linear gain, 0 to 1.5. */
+  volume: number;
+  fadeIn: number;
+  fadeOut: number;
+  loop: boolean;
+  track: MusicTrackRef;
 }
 export type TextLayer = "hook" | "captions";
 export interface TextTransform { x: number; y: number; scale: number }

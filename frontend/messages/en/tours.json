@@ -46,5 +46,33 @@
       "body": "Length, captions, framing, cleanup, and B-roll are now in one menu. We remember your choices, so you only set them once."
     }
   },
-  "skip": "Skip"
+  "skip": "Skip",
+  "transcript-reader": {
+    "intro": {
+      "title": "Read your video, then clip any part of it",
+      "body": "The new Transcript view shows everything that was said. Select a phrase, sentence or paragraph and turn it into a clip, or ask AI to find the moments you want."
+    },
+    "open": {
+      "title": "Open the transcript",
+      "body": "Switch between your clips and the full transcript here. Click any word to play from it."
+    },
+    "select": {
+      "title": "Turn a selection into a clip",
+      "body": "Drag across words, or double-click a sentence. Press Create clip and it renders with your usual captions and settings, then joins this video's clips."
+    },
+    "moments": {
+      "title": "Let AI find moments",
+      "body": "Pick Viral, Quotes, Stories and more, or describe what you want, like “moments about money”. Results light up in the transcript, ready to create."
+    }
+  },
+  "editor-music": {
+    "intro": {
+      "title": "Background music is here",
+      "body": "Add music under any clip: from the library or your own uploads, with volume, fades, and automatic dips when someone speaks."
+    },
+    "lane": {
+      "title": "The music lane",
+      "body": "Click the lane to pick a track. Drag a piece to move it, drag its edges to trim, and select it to change its volume and fades."
+    }
+  }
 }

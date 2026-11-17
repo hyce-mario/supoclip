@@ -190,8 +190,12 @@ def create_app(
     app.include_router(tasks.router)
     from .api.routes.clip_exports import router as clip_export_router
     from .api.routes.editor import router as editor_router
+    from .api.routes.transcript import router as transcript_router
+    from .api.routes.music import router as music_router
     app.include_router(clip_export_router)
     app.include_router(editor_router)
+    app.include_router(transcript_router)
+    app.include_router(music_router)
     app.include_router(admin_router)
 
     from .api.routes.media import router as media_router

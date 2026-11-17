@@ -1,0 +1,135 @@
+{
+  "player": {
+    "unavailable": "The source video can't be played here, but you can still read and select the transcript.",
+    "embedFailed": "This video can't be played inside SupoClip.",
+    "openYouTube": "Open on YouTube",
+    "loadFailed": "The source video couldn't be loaded."
+  },
+  "reader": {
+    "label": "Transcript",
+    "follow": "Follow playback",
+    "playFrom": "Play from {time}",
+    "speaker": "Speaker {name}",
+    "clipped": "Already in a clip",
+    "clipBadge": "Clip {number}"
+  },
+  "selection": {
+    "emptyTitle": "Select part of the transcript",
+    "hints": {
+      "click": "Click a word to play from there",
+      "drag": "Drag across words to select a phrase",
+      "double": "Double-click to select a sentence",
+      "triple": "Triple-click to select a paragraph (Shift-click extends)"
+    },
+    "seconds": "{seconds}s",
+    "clear": "Clear selection",
+    "play": "Play",
+    "snap": "Snap to sentences",
+    "copy": "Copy text",
+    "copied": "Text copied",
+    "warnings": {
+      "tooShort": "Too short for a clip (at least 3 seconds).",
+      "short": "Short clips under 10 seconds rarely perform well.",
+      "tooLong": "Too long for a clip (at most 3 minutes)."
+    }
+  },
+  "search": {
+    "placeholder": "Search the transcript",
+    "none": "No matches",
+    "count": "{current} of {total}",
+    "previous": "Previous match",
+    "next": "Next match",
+    "select": "Select"
+  },
+  "legend": {
+    "clipped": "{count, plural, one {# clip} other {# clips}} already made from this video"
+  },
+  "states": {
+    "retry": "Try again",
+    "notReady": {
+      "title": "The transcript isn't ready yet",
+      "body": "It appears here once this video has been transcribed."
+    },
+    "missing": {
+      "title": "No transcript for this video",
+      "body": "This video was processed before transcripts were saved. Generate it again to read its transcript."
+    },
+    "error": {
+      "title": "The transcript couldn't be loaded",
+      "body": "Check your connection and try again."
+    }
+  },
+  "create": {
+    "button": "Create clip",
+    "titleLabel": "Hook title (optional)",
+    "titlePlaceholder": "Hook title (optional)",
+    "queued": "Rendering your clip. It appears in your clips when it's ready.",
+    "errors": {
+      "too_short": "Select at least 3 seconds.",
+      "too_long": "Select at most 3 minutes.",
+      "out_of_bounds": "That range runs past the end of the video.",
+      "invalid_range": "That selection can't be turned into a clip.",
+      "too_many": "A few clips are already rendering. Wait for one to finish.",
+      "task_busy": "Wait for this video to finish processing.",
+      "queue_unavailable": "Rendering is unavailable right now. Try again in a minute.",
+      "unknown": "The clip couldn't be created. Try again."
+    }
+  },
+  "jobs": {
+    "heading": "Clips from the transcript",
+    "untitled": "Clip {start}–{end}",
+    "view": "View",
+    "retry": "Try again",
+    "dismiss": "Dismiss",
+    "status": {
+      "queued": "Waiting",
+      "rendering": "Rendering…",
+      "completed": "Added to clips",
+      "failed": "Couldn't render"
+    }
+  },
+  "moments": {
+    "heading": "Find moments with AI",
+    "presetsLabel": "What to look for",
+    "presets": {
+      "viral": "Viral",
+      "quotes": "Quotes",
+      "stories": "Stories",
+      "advice": "Advice",
+      "hot_takes": "Hot takes"
+    },
+    "promptPlaceholder": "Or describe it, e.g. moments about money",
+    "find": "Find",
+    "inSelection": "Only search the selected part ({start}–{end})",
+    "history": "Earlier searches",
+    "remove": "Remove this search",
+    "searching": "Reading the transcript. This can take a minute or two.",
+    "failed": "The search failed. Try again.",
+    "none": "No moments found. Try another preset or request.",
+    "untitled": "Untitled moment",
+    "seconds": "{seconds}s",
+    "check": "Select {title}",
+    "made": {
+      "queued": "Waiting to render",
+      "rendering": "Rendering",
+      "completed": "Already a clip"
+    },
+    "createOne": "Create clip",
+    "selectAll": "Select all",
+    "selectNone": "Clear",
+    "createSelected": "{count, plural, =0 {Create clips} one {Create # clip} other {Create # clips}}",
+    "queued": "{count, plural, one {Rendering # clip.} other {Rendering # clips.}} They appear in your clips when ready.",
+    "errors": {
+      "empty": "Choose a preset or describe what to find.",
+      "invalid_preset": "Choose one of the presets.",
+      "invalid_range": "That selection can't be searched.",
+      "range_too_short": "Select at least 30 seconds to search in.",
+      "busy": "A search is already running. Wait for it to finish.",
+      "daily_limit": "You've reached today's limit for AI searches.",
+      "no_transcript": "No transcript is stored for this video.",
+      "task_busy": "Wait for this video to finish processing.",
+      "queue_unavailable": "AI search is unavailable right now. Try again in a minute.",
+      "unknown": "The search couldn't start. Try again."
+    }
+  }
+}

@@ -283,5 +283,10 @@
       "bumps": "Der Weg ist gerade etwas holprig. Wir arbeiten uns durch—noch ein wenig Geduld.",
       "slower": "Heute läuft es etwas langsamer als sonst. Wir bleiben dran."
     }
+  },
+  "views": {
+    "clips": "Clips",
+    "transcript": "Transkript",
+    "label": "Ansicht"
   }
 }

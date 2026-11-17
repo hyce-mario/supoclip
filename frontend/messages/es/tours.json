@@ -46,5 +46,33 @@
       "body": "Duración, subtítulos, encuadre, limpieza y B-roll ahora están en un solo menú. Recordamos tus elecciones, así que solo las configuras una vez."
     }
   },
-  "skip": "Omitir"
+  "skip": "Omitir",
+  "transcript-reader": {
+    "intro": {
+      "title": "Lee tu video y recorta cualquier parte",
+      "body": "La nueva vista de transcripción muestra todo lo que se dijo. Selecciona una frase, oración o párrafo y conviértelo en un clip, o pide a la IA que encuentre los momentos que quieres."
+    },
+    "open": {
+      "title": "Abre la transcripción",
+      "body": "Cambia aquí entre tus clips y la transcripción completa. Haz clic en cualquier palabra para reproducir desde ahí."
+    },
+    "select": {
+      "title": "Convierte una selección en clip",
+      "body": "Arrastra sobre las palabras o haz doble clic en una oración. Pulsa Crear clip y se renderiza con tus subtítulos y ajustes habituales, y se suma a los clips de este video."
+    },
+    "moments": {
+      "title": "Deja que la IA encuentre momentos",
+      "body": "Elige Virales, Frases, Historias y más, o describe lo que quieres, como “momentos sobre dinero”. Los resultados se resaltan en la transcripción, listos para crear."
+    }
+  },
+  "editor-music": {
+    "intro": {
+      "title": "Llegó la música de fondo",
+      "body": "Añade música a cualquier clip: de la biblioteca o tus propias pistas, con volumen, fundidos y bajadas automáticas cuando alguien habla."
+    },
+    "lane": {
+      "title": "La pista de música",
+      "body": "Haz clic en la pista para elegir una canción. Arrastra una pieza para moverla, sus bordes para recortarla, y selecciónala para cambiar volumen y fundidos."
+    }
+  }
 }

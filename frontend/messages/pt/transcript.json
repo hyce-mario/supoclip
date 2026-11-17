@@ -1,0 +1,135 @@
+{
+  "player": {
+    "unavailable": "O vídeo original não pode ser reproduzido aqui, mas você ainda pode ler e selecionar a transcrição.",
+    "embedFailed": "Este vídeo não pode ser reproduzido dentro do SupoClip.",
+    "openYouTube": "Abrir no YouTube",
+    "loadFailed": "Não foi possível carregar o vídeo original."
+  },
+  "reader": {
+    "label": "Transcrição",
+    "follow": "Acompanhar a reprodução",
+    "playFrom": "Reproduzir a partir de {time}",
+    "speaker": "Locutor {name}",
+    "clipped": "Já está em um clipe",
+    "clipBadge": "Clipe {number}"
+  },
+  "selection": {
+    "emptyTitle": "Selecione parte da transcrição",
+    "hints": {
+      "click": "Clique em uma palavra para reproduzir a partir dela",
+      "drag": "Arraste sobre as palavras para selecionar um trecho",
+      "double": "Clique duas vezes para selecionar uma frase",
+      "triple": "Clique três vezes para selecionar um parágrafo (Shift+clique amplia)"
+    },
+    "seconds": "{seconds} s",
+    "clear": "Limpar seleção",
+    "play": "Reproduzir",
+    "snap": "Ajustar às frases",
+    "copy": "Copiar texto",
+    "copied": "Texto copiado",
+    "warnings": {
+      "tooShort": "Curto demais para um clipe (mínimo de 3 segundos).",
+      "short": "Clipes com menos de 10 segundos raramente têm bom desempenho.",
+      "tooLong": "Longo demais para um clipe (máximo de 3 minutos)."
+    }
+  },
+  "search": {
+    "placeholder": "Pesquisar na transcrição",
+    "none": "Nenhum resultado",
+    "count": "{current} de {total}",
+    "previous": "Resultado anterior",
+    "next": "Próximo resultado",
+    "select": "Selecionar"
+  },
+  "legend": {
+    "clipped": "{count, plural, one {# clipe já criado} other {# clipes já criados}} a partir deste vídeo"
+  },
+  "states": {
+    "retry": "Tentar novamente",
+    "notReady": {
+      "title": "A transcrição ainda não está pronta",
+      "body": "Ela aparece aqui depois que o vídeo for transcrito."
+    },
+    "missing": {
+      "title": "Não há transcrição para este vídeo",
+      "body": "Este vídeo foi processado antes de as transcrições serem salvas. Gere-o novamente para ler a transcrição."
+    },
+    "error": {
+      "title": "Não foi possível carregar a transcrição",
+      "body": "Verifique sua conexão e tente novamente."
+    }
+  },
+  "create": {
+    "button": "Criar clipe",
+    "titleLabel": "Título de gancho (opcional)",
+    "titlePlaceholder": "Título de gancho (opcional)",
+    "queued": "Renderizando seu clipe. Ele aparece nos seus clipes quando estiver pronto.",
+    "errors": {
+      "too_short": "Selecione pelo menos 3 segundos.",
+      "too_long": "Selecione no máximo 3 minutos.",
+      "out_of_bounds": "Esse trecho passa do fim do vídeo.",
+      "invalid_range": "Essa seleção não pode virar um clipe.",
+      "too_many": "Alguns clipes já estão sendo renderizados. Aguarde um terminar.",
+      "task_busy": "Aguarde este vídeo terminar de processar.",
+      "queue_unavailable": "A renderização está indisponível agora. Tente novamente em um minuto.",
+      "unknown": "Não foi possível criar o clipe. Tente novamente."
+    }
+  },
+  "jobs": {
+    "heading": "Clipes da transcrição",
+    "untitled": "Clipe {start}–{end}",
+    "view": "Ver",
+    "retry": "Tentar novamente",
+    "dismiss": "Dispensar",
+    "status": {
+      "queued": "Aguardando",
+      "rendering": "Renderizando…",
+      "completed": "Adicionado aos clipes",
+      "failed": "Falha ao renderizar"
+    }
+  },
+  "moments": {
+    "heading": "Encontre momentos com IA",
+    "presetsLabel": "O que procurar",
+    "presets": {
+      "viral": "Virais",
+      "quotes": "Frases",
+      "stories": "Histórias",
+      "advice": "Dicas",
+      "hot_takes": "Opiniões fortes"
+    },
+    "promptPlaceholder": "Ou descreva, ex.: momentos sobre dinheiro",
+    "find": "Buscar",
+    "inSelection": "Buscar só no trecho selecionado ({start}–{end})",
+    "history": "Buscas anteriores",
+    "remove": "Remover esta busca",
+    "searching": "Lendo a transcrição. Isso pode levar um ou dois minutos.",
+    "failed": "A busca falhou. Tente novamente.",
+    "none": "Nenhum momento encontrado. Tente outro tipo ou pedido.",
+    "untitled": "Momento sem título",
+    "seconds": "{seconds}s",
+    "check": "Selecionar {title}",
+    "made": {
+      "queued": "Aguardando renderização",
+      "rendering": "Renderizando",
+      "completed": "Já é um clipe"
+    },
+    "createOne": "Criar clipe",
+    "selectAll": "Selecionar tudo",
+    "selectNone": "Limpar",
+    "createSelected": "{count, plural, =0 {Criar clipes} one {Criar # clipe} other {Criar # clipes}}",
+    "queued": "{count, plural, one {Renderizando # clipe.} other {Renderizando # clipes.}} Eles aparecem nos seus clipes quando estiverem prontos.",
+    "errors": {
+      "empty": "Escolha um tipo ou descreva o que procurar.",
+      "invalid_preset": "Escolha um dos tipos.",
+      "invalid_range": "Não é possível buscar nessa seleção.",
+      "range_too_short": "Selecione pelo menos 30 segundos para buscar.",
+      "busy": "Já há uma busca em andamento. Aguarde terminar.",
+      "daily_limit": "Você atingiu o limite diário de buscas com IA.",
+      "no_transcript": "Não há transcrição salva para este vídeo.",
+      "task_busy": "Aguarde este vídeo terminar de processar.",
+      "queue_unavailable": "A busca com IA está indisponível agora. Tente novamente em um minuto.",
+      "unknown": "Não foi possível iniciar a busca. Tente novamente."
+    }
+  }
+}

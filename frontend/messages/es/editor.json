@@ -207,7 +207,8 @@
       "hideCaptions": "Ocultar subtítulos",
       "showCaptions": "Mostrar subtítulos",
       "mute": "Silenciar",
-      "unmute": "Activar sonido"
+      "unmute": "Activar sonido",
+      "music": "Música"
     },
     "hookStart": "Inicio del título, segundos",
     "hookEnd": "Fin del título, segundos"
@@ -402,5 +403,50 @@
     "backupsNothing": "No hay nada que quitar. Los cambios sin guardar se conservan hasta que lleguen a tu cuenta.",
     "backupsBrowserNote": "Borrar los datos del sitio de SupoClip en este navegador también elimina estas copias y cierra tu sesión. Hazlo solo cuando todos los clips abiertos digan “Todos los cambios guardados”.",
     "done": "Listo"
+  },
+  "music": {
+    "title": "Música de fondo",
+    "description": "La música suena en toda la edición, aunque cortes el clip.",
+    "duck": "Bajar la música cuando alguien habla",
+    "duckHint": "La música baja cuando hay voz y vuelve a subir en las pausas.",
+    "untitled": "Pista sin título",
+    "pieceRange": "Suena de {start} a {end}",
+    "deselect": "Cerrar",
+    "volume": "Volumen de la música",
+    "fadeIn": "Entrada gradual",
+    "fadeOut": "Salida gradual",
+    "offset": "Empezar la canción en",
+    "loop": "Repetir para llenar el clip",
+    "remove": "Quitar música",
+    "libraryTitle": "Biblioteca de música",
+    "libraryDescription": "Las pistas se añaden en el cabezal ({time}).",
+    "search": "Buscar música",
+    "categories": "Categorías de música",
+    "allCategories": "Todas",
+    "loadFailed": "No se pudo cargar la música.",
+    "retry": "Reintentar",
+    "libraryEmpty": "La biblioteca de música está vacía. Sube tus propias pistas abajo o añade archivos a la carpeta de música del servidor.",
+    "noMatches": "Ninguna pista coincide.",
+    "uploadsTitle": "Tus pistas",
+    "uploadsDescription": "Sube canciones o sonidos que tengas derecho a usar (hasta 30 MB).",
+    "upload": "Subir",
+    "uploadsEmpty": "Aún no has subido pistas.",
+    "preview": "Escuchar {title}",
+    "stopPreview": "Detener {title}",
+    "deleteUpload": "Eliminar {title}",
+    "add": "Añadir",
+    "added": "Se añadió {title}",
+    "uploaded": "Se subió {title}",
+    "laneLabel": "Pista de música",
+    "pieceLabel": "{title}, de {start} a {end}",
+    "laneEmpty": "Haz clic para añadir música de fondo",
+    "errors": {
+      "too_large": "Las pistas pueden pesar como máximo 30 MB.",
+      "not_audio": "Ese archivo no tiene audio utilizable.",
+      "too_many": "Tienes el máximo de pistas. Elimina una primero.",
+      "storage": "El almacenamiento no está disponible. Inténtalo de nuevo.",
+      "unknown": "La subida falló. Inténtalo de nuevo.",
+      "delete": "No se pudo eliminar la pista."
+    }
   }
 }

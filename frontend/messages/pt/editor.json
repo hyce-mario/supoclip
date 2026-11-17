@@ -207,7 +207,8 @@
       "hideCaptions": "Ocultar legendas",
       "showCaptions": "Mostrar legendas",
       "mute": "Silenciar",
-      "unmute": "Ativar som"
+      "unmute": "Ativar som",
+      "music": "Música"
     },
     "hookStart": "Início do título, segundos",
     "hookEnd": "Fim do título, segundos"
@@ -402,5 +403,50 @@
     "backupsNothing": "Nada para remover. As alterações não salvas ficam até chegarem à sua conta.",
     "backupsBrowserNote": "Limpar os dados do site do SupoClip neste navegador também remove essas cópias e encerra sua sessão. Faça isso só quando todos os clipes abertos mostrarem “Todas as alterações salvas”.",
     "done": "Pronto"
+  },
+  "music": {
+    "title": "Música de fundo",
+    "description": "A música toca em toda a edição, mesmo onde você corta o clipe.",
+    "duck": "Abaixar a música quando alguém fala",
+    "duckHint": "A música diminui durante a fala e volta nas pausas.",
+    "untitled": "Faixa sem título",
+    "pieceRange": "Toca de {start} a {end}",
+    "deselect": "Fechar",
+    "volume": "Volume da música",
+    "fadeIn": "Fade de entrada",
+    "fadeOut": "Fade de saída",
+    "offset": "Começar a música em",
+    "loop": "Repetir para preencher o clipe",
+    "remove": "Remover música",
+    "libraryTitle": "Biblioteca de músicas",
+    "libraryDescription": "As faixas são adicionadas na agulha ({time}).",
+    "search": "Buscar música",
+    "categories": "Categorias de música",
+    "allCategories": "Todas",
+    "loadFailed": "Não foi possível carregar as músicas.",
+    "retry": "Tentar novamente",
+    "libraryEmpty": "A biblioteca de músicas está vazia. Envie suas próprias faixas abaixo ou adicione arquivos à pasta de músicas do servidor.",
+    "noMatches": "Nenhuma faixa corresponde.",
+    "uploadsTitle": "Suas faixas",
+    "uploadsDescription": "Envie músicas ou sons que você tem direito de usar (até 30 MB).",
+    "upload": "Enviar",
+    "uploadsEmpty": "Nenhuma faixa enviada ainda.",
+    "preview": "Ouvir {title}",
+    "stopPreview": "Parar {title}",
+    "deleteUpload": "Excluir {title}",
+    "add": "Adicionar",
+    "added": "{title} adicionada",
+    "uploaded": "{title} enviada",
+    "laneLabel": "Faixa de música",
+    "pieceLabel": "{title}, de {start} a {end}",
+    "laneEmpty": "Clique para adicionar música de fundo",
+    "errors": {
+      "too_large": "As faixas podem ter no máximo 30 MB.",
+      "not_audio": "Esse arquivo não tem áudio utilizável.",
+      "too_many": "Você atingiu o máximo de faixas. Exclua uma primeiro.",
+      "storage": "O armazenamento está indisponível. Tente novamente.",
+      "unknown": "O envio falhou. Tente novamente.",
+      "delete": "Não foi possível excluir a faixa."
+    }
   }
 }

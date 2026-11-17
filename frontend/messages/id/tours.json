@@ -46,5 +46,33 @@
       "body": "Durasi, teks, pembingkaian, pembersihan, dan B-roll kini ada dalam satu menu. Kami mengingat pilihanmu, jadi cukup diatur sekali."
     }
   },
-  "skip": "Lewati"
+  "skip": "Lewati",
+  "transcript-reader": {
+    "intro": {
+      "title": "Baca videomu, lalu klip bagian mana pun",
+      "body": "Tampilan Transkrip baru menampilkan semua yang diucapkan. Pilih frasa, kalimat, atau paragraf dan jadikan klip, atau minta AI menemukan momen yang kamu mau."
+    },
+    "open": {
+      "title": "Buka transkrip",
+      "body": "Beralih antara klipmu dan transkrip lengkap di sini. Klik kata mana pun untuk memutar dari situ."
+    },
+    "select": {
+      "title": "Jadikan pilihan sebagai klip",
+      "body": "Seret di atas kata atau klik dua kali pada kalimat. Tekan Buat klip dan klip dirender dengan teks dan pengaturan biasamu, lalu masuk ke klip video ini."
+    },
+    "moments": {
+      "title": "Biarkan AI menemukan momen",
+      "body": "Pilih Viral, Kutipan, Cerita, dan lainnya, atau jelaskan yang kamu mau, seperti “momen tentang uang”. Hasilnya disorot di transkrip, siap dibuat."
+    }
+  },
+  "editor-music": {
+    "intro": {
+      "title": "Musik latar sudah hadir",
+      "body": "Tambahkan musik ke klip mana pun: dari pustaka atau unggahanmu sendiri, dengan volume, fade, dan pengecilan otomatis saat ada yang bicara."
+    },
+    "lane": {
+      "title": "Trek musik",
+      "body": "Klik trek untuk memilih lagu. Seret potongan untuk memindahkannya, seret tepinya untuk memangkas, dan pilih untuk mengubah volume serta fade."
+    }
+  }
 }

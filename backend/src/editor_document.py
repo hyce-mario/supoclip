@@ -142,6 +142,40 @@ class BRollClip(Model):
         return self
 
 
+class MusicTrackRef(Model):
+    """A track from the built-in library or the creator's uploads (``music_library``)."""
+
+    source: Literal["library", "upload"]
+    id: str = Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
+    title: str = Field(default="", max_length=200)
+    duration: float = Field(gt=0, le=3600)
+
+
+class MusicClip(Model):
+    """Background music from ``start`` to ``end`` on the edit (output) timeline.
+
+    Unlike B-roll it does not follow the source: cutting the clip must not chop
+    the song. ``offset`` is where in the track it begins; ``loop`` repeats a
+    track shorter than the piece. Fades are seconds; ``volume`` is linear.
+    """
+
+    id: str = Field(min_length=1, max_length=100)
+    start: float = Field(ge=0, le=86400)
+    end: float = Field(gt=0, le=86400)
+    offset: float = Field(default=0, ge=0, le=3600)
+    volume: float = Field(default=0.3, ge=0, le=1.5)
+    fadeIn: float = Field(default=1, ge=0, le=10)
+    fadeOut: float = Field(default=1.5, ge=0, le=10)
+    loop: bool = False
+    track: MusicTrackRef
+
+    @model_validator(mode="after")
+    def ordered(self):
+        if self.end - self.start < 0.5 - TIME_EPSILON:
+            raise ValueError("Music must play for at least half a second")
+        return self
+
+
 class HookTiming(Model):
     start: float = Field(ge=0, le=86400)
     end: float = Field(gt=0, le=86400)
@@ -178,6 +212,9 @@ class EditDocument(Model):
     textTransforms: dict[Literal["hook", "captions"], TextTransform] = Field(default_factory=dict)
     captionTransforms: dict[Annotated[str, Field(max_length=300)], CaptionTransform] = Field(default_factory=dict, max_length=5000)
     broll: list[BRollClip] = Field(default_factory=list, max_length=60)
+    music: list[MusicClip] = Field(default_factory=list, max_length=20)
+    # Lower the music while someone speaks (see editor_music.speech_spans).
+    musicDuck: bool = True
 
     def validate_duration(self, duration: float):
         if any(s.end > duration + 0.05 for s in self.segments):
@@ -188,7 +225,9 @@ class EditDocument(Model):
             raise ValueError("B-roll extends past the original clip")
         if len({s.id for s in self.segments}) != len(self.segments) or len(
             {w.id for w in self.words}
-        ) != len(self.words) or len({b.id for b in self.broll}) != len(self.broll):
+        ) != len(self.words) or len({b.id for b in self.broll}) != len(self.broll) or len(
+            {m.id for m in self.music}
+        ) != len(self.music):
             raise ValueError("Editor item IDs must be unique")
         ordered = sorted(self.broll, key=lambda b: b.start)
         if any(later.start < earlier.end - 0.01 for earlier, later in zip(ordered, ordered[1:])):
@@ -459,11 +498,14 @@ def render_document(
     preset: str,
     broll_files: dict[str, Path] | None = None,
     *,
+    music_files: dict[str, Path] | None = None,
     should_cancel=None,
     on_progress=None,
 ):
-    """Render a draft. ``broll_files`` maps footage keys to local files; B-roll
-    whose footage is missing is left out rather than failing the export."""
+    """Render a draft. ``broll_files`` maps footage keys to local files and
+    ``music_files`` music keys (``editor_music.music_key``) to local tracks;
+    footage or music whose file is missing is left out rather than failing."""
+    from .editor_music import music_mix
     from .clip_editor import _ffprobe_size, _escape_filter_path
     from .media.broll_overlay import broll_input_args, broll_overlay_graph, normalize_broll_overlays
     from .video_utils import ass_fonts_dir
@@ -549,10 +591,23 @@ def render_document(
         filters.append(f"[video]{geometry},{effects},{subtitles}[outv]")
     # Mixed source/stock frame rates must not make ffmpeg duplicate tail frames.
     filters.append("[outv]fps=30[finalv]")
+    broll_args = broll_input_args(overlays)
+    music_args, music_filters, music_label = music_mix(
+        document, music_files or {}, total, 1 + broll_args.count("-i"), mapped_words(document)
+    )
     if audio:
         filters.append(
-            f"[audio]volume={0 if document.muted else document.volume}[outa]"
+            f"[audio]volume={0 if document.muted else document.volume}"
+            + ("[voice]" if music_label else "[outa]")
         )
+    if music_label:
+        filters += music_filters
+        filters.append(
+            f"[voice]{music_label}amix=inputs=2:normalize=0:duration=first[outa]"
+            if audio
+            else f"{music_label}apad=whole_dur={total:.3f}[outa]"
+        )
+    has_audio = audio or music_label is not None
     output = directory / f"export-{job_id}.mp4"
     temporary = directory / f".export-{job_id}.mp4"
     command = [
@@ -560,13 +615,14 @@ def render_document(
         "-y",
         "-i",
         str(source),
-        *broll_input_args(overlays),
+        *broll_args,
+        *music_args,
         "-filter_complex",
         ";".join(filters),
         "-map",
         "[finalv]",
     ]
-    if audio:
+    if has_audio:
         command += ["-map", "[outa]", "-c:a", "aac", "-b:a", "192k"]
     command += [
         "-c:v",

@@ -46,5 +46,33 @@
       "body": "Länge, Untertitel, Bildausschnitt, Bereinigung und B-Roll liegen jetzt in einem Menü. Wir merken uns deine Auswahl, du stellst sie also nur einmal ein."
     }
   },
-  "skip": "Überspringen"
+  "skip": "Überspringen",
+  "transcript-reader": {
+    "intro": {
+      "title": "Lies dein Video und schneide jeden Teil",
+      "body": "Die neue Transkript-Ansicht zeigt alles, was gesagt wurde. Wähle eine Phrase, einen Satz oder Absatz und mach daraus einen Clip, oder lass die KI die passenden Momente finden."
+    },
+    "open": {
+      "title": "Transkript öffnen",
+      "body": "Hier wechselst du zwischen deinen Clips und dem ganzen Transkript. Klicke auf ein Wort, um ab dort abzuspielen."
+    },
+    "select": {
+      "title": "Aus einer Auswahl einen Clip machen",
+      "body": "Ziehe über Wörter oder doppelklicke einen Satz. Mit Clip erstellen wird er mit deinen gewohnten Untertiteln und Einstellungen gerendert und landet bei den Clips dieses Videos."
+    },
+    "moments": {
+      "title": "Momente von der KI finden lassen",
+      "body": "Wähle Viral, Zitate, Geschichten und mehr, oder beschreibe, was du suchst, etwa „Momente über Geld“. Die Treffer leuchten im Transkript auf, bereit zum Erstellen."
+    }
+  },
+  "editor-music": {
+    "intro": {
+      "title": "Hintergrundmusik ist da",
+      "body": "Lege Musik unter jeden Clip: aus der Bibliothek oder eigenen Uploads, mit Lautstärke, Blenden und automatischem Absenken, wenn jemand spricht."
+    },
+    "lane": {
+      "title": "Die Musikspur",
+      "body": "Klicke auf die Spur, um einen Titel zu wählen. Ziehe ein Stück, um es zu verschieben, ziehe die Ränder zum Kürzen, und wähle es aus, um Lautstärke und Blenden zu ändern."
+    }
+  }
 }

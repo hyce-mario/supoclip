@@ -69,6 +69,10 @@ import { orderedParts, seriesPartTotal, SeriesView, unfinishedSeries } from "@/c
 import { HeroClipView } from "@/components/app/hero-clip-view";
 import { DownloadAllButton } from "@/components/app/download-all-button";
 import { buildRecreateBody, createActionId, isWorkflowErrorCode, WorkflowFailure } from "@/components/app/workflow-failure";
+import { FeatureTourHost } from "@/components/feature-tour";
+import { RangeClipJobs } from "@/components/transcript/range-clip-jobs";
+import { TranscriptView } from "@/components/transcript/transcript-view";
+import { isActiveJob, useRangeClips } from "@/components/transcript/use-range-clips";
 import { availableWorkflows, useWorkflowsInfo } from "@/components/workflow-picker";
 import { intlLocale } from "@/i18n/config";
 import { timeAgoLabel } from "@/lib/generations";
@@ -191,6 +195,14 @@ export default function TaskPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const alreadyProcessing = searchParams.get("already") === "1";
+  const view = searchParams.get("view") === "transcript" ? "transcript" : "clips";
+  const setView = (next: "clips" | "transcript") => {
+    const query = new URLSearchParams(searchParams.toString());
+    if (next === "clips") query.delete("view");
+    else query.set("view", next);
+    const search = query.toString();
+    router.replace(search ? `?${search}` : window.location.pathname, { scroll: false });
+  };
   const router = useRouter();
   const { data: session } = useSession();
   const [task, setTask] = useState<TaskDetails | null>(null);
@@ -394,6 +406,7 @@ export default function TaskPage() {
     },
     [buildSupportError, params.id, t, taskApiUrl],
   );
+  const refreshAfterRangeClip = useCallback(() => void fetchTaskStatus(0, 0, true), [fetchTaskStatus]);
 
   // Initial fetch - runs immediately, doesn't wait for session
   useEffect(() => {
@@ -774,6 +787,12 @@ export default function TaskPage() {
     }
   };
 
+  // Clips requested from the transcript; a finished one reloads the clip list.
+  const ownsTask = Boolean(task) && !(session?.user?.id && task?.user_id && session.user.id !== task.user_id);
+  const rangeClipsTaskId =
+    ownsTask && task && task.status !== "queued" && task.status !== "processing" ? task.id : null;
+  const rangeClips = useRangeClips(rangeClipsTaskId, refreshAfterRangeClip);
+
   if (isLoading) return <PageLoading />;
   if (error) return <PageError message={error} retry={() => void fetchTaskStatus()} />;
 
@@ -781,6 +800,9 @@ export default function TaskPage() {
   const sourceVideoUrl = task ? originalVideoUrl(task) : null;
   const hasClips = task?.status === "completed" && clips.length > 0;
   const isActive = task?.status === "processing" || task?.status === "queued";
+  // The owner reads the source transcript once processing has finished (or stopped).
+  const canReadTranscript = Boolean(task) && !isActive && !readOnly;
+  const showTranscript = canReadTranscript && view === "transcript";
   const workflow = taskWorkflow(task);
   const plan = task?.workflow_plan ?? null;
   const isSeries = workflow === "series";
@@ -997,13 +1019,35 @@ export default function TaskPage() {
         </header>
       )}
 
-      <div className="mt-8">
+      {canReadTranscript && (
+        <div className="mt-6 inline-flex rounded-lg border bg-background p-0.5" role="group" aria-label={t("views.label")} data-tour="task-transcript-tab">
+          {(["clips", "transcript"] as const).map((value) => (
+            <button key={value} type="button" aria-pressed={view === value} onClick={() => setView(value)}
+              className={cn("h-8 rounded-md px-4 text-sm font-medium transition-colors", view === value ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground")}>
+              {t(`views.${value}`)}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {canReadTranscript && <FeatureTourHost enabled={Boolean(session?.user?.id)} busy={false} />}
+
+      <div className={canReadTranscript ? "mt-6" : "mt-8"}>
         {alreadyProcessing && task && (task.status === "queued" || task.status === "processing") && (
           <p role="status" className="mb-4 text-sm text-muted-foreground">{t("alreadyProcessing")}</p>
         )}
         {reconnecting && <p role="status" className="mb-4 text-sm text-muted-foreground">{readOnly ? t("reconnectingOther") : t("reconnectingOwn")}</p>}
+        {!showTranscript && canReadTranscript && rangeClips.jobs.some(isActiveJob) && (
+          <RangeClipJobs
+            className="mb-6 max-w-md"
+            jobs={rangeClips.jobs.filter(isActiveJob)}
+            onDismiss={(job) => void rangeClips.dismiss(job.id)}
+          />
+        )}
 
-        {isActive && task ? (
+        {showTranscript && task ? (
+          <TranscriptView taskId={task.id} rangeClips={rangeClips} onViewClips={() => setView("clips")} />
+        ) : isActive && task ? (
           <div className="space-y-8">
             <ProcessingPanel status={task.status} progress={progress} message={progressMessage} workflow={workflow}
               phaseSince={Date.parse(task.updated_at)} sourceSeconds={task.source_duration_seconds}

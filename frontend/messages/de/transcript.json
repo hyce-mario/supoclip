@@ -1,0 +1,135 @@
+{
+  "player": {
+    "unavailable": "Das Originalvideo kann hier nicht abgespielt werden, du kannst das Transkript aber trotzdem lesen und auswählen.",
+    "embedFailed": "Dieses Video kann nicht in SupoClip abgespielt werden.",
+    "openYouTube": "Auf YouTube öffnen",
+    "loadFailed": "Das Originalvideo konnte nicht geladen werden."
+  },
+  "reader": {
+    "label": "Transkript",
+    "follow": "Wiedergabe folgen",
+    "playFrom": "Ab {time} abspielen",
+    "speaker": "Sprecher {name}",
+    "clipped": "Schon in einem Clip",
+    "clipBadge": "Clip {number}"
+  },
+  "selection": {
+    "emptyTitle": "Wähle einen Teil des Transkripts aus",
+    "hints": {
+      "click": "Klicke auf ein Wort, um ab dort abzuspielen",
+      "drag": "Ziehe über Wörter, um eine Passage auszuwählen",
+      "double": "Doppelklick wählt einen Satz aus",
+      "triple": "Dreifachklick wählt einen Absatz aus (Umschalt+Klick erweitert)"
+    },
+    "seconds": "{seconds} s",
+    "clear": "Auswahl aufheben",
+    "play": "Abspielen",
+    "snap": "An Sätze ausrichten",
+    "copy": "Text kopieren",
+    "copied": "Text kopiert",
+    "warnings": {
+      "tooShort": "Zu kurz für einen Clip (mindestens 3 Sekunden).",
+      "short": "Clips unter 10 Sekunden schneiden selten gut ab.",
+      "tooLong": "Zu lang für einen Clip (höchstens 3 Minuten)."
+    }
+  },
+  "search": {
+    "placeholder": "Transkript durchsuchen",
+    "none": "Keine Treffer",
+    "count": "{current} von {total}",
+    "previous": "Vorheriger Treffer",
+    "next": "Nächster Treffer",
+    "select": "Auswählen"
+  },
+  "legend": {
+    "clipped": "{count, plural, one {# Clip} other {# Clips}} aus diesem Video bereits erstellt"
+  },
+  "states": {
+    "retry": "Erneut versuchen",
+    "notReady": {
+      "title": "Das Transkript ist noch nicht fertig",
+      "body": "Es erscheint hier, sobald das Video transkribiert wurde."
+    },
+    "missing": {
+      "title": "Kein Transkript für dieses Video",
+      "body": "Dieses Video wurde verarbeitet, bevor Transkripte gespeichert wurden. Erstelle es erneut, um das Transkript zu lesen."
+    },
+    "error": {
+      "title": "Das Transkript konnte nicht geladen werden",
+      "body": "Prüfe deine Verbindung und versuche es erneut."
+    }
+  },
+  "create": {
+    "button": "Clip erstellen",
+    "titleLabel": "Hook-Titel (optional)",
+    "titlePlaceholder": "Hook-Titel (optional)",
+    "queued": "Dein Clip wird gerendert. Er erscheint bei deinen Clips, sobald er fertig ist.",
+    "errors": {
+      "too_short": "Wähle mindestens 3 Sekunden aus.",
+      "too_long": "Wähle höchstens 3 Minuten aus.",
+      "out_of_bounds": "Dieser Bereich reicht über das Videoende hinaus.",
+      "invalid_range": "Aus dieser Auswahl lässt sich kein Clip erstellen.",
+      "too_many": "Es werden bereits mehrere Clips gerendert. Warte, bis einer fertig ist.",
+      "task_busy": "Warte, bis dieses Video fertig verarbeitet ist.",
+      "queue_unavailable": "Rendern ist gerade nicht verfügbar. Versuche es in einer Minute erneut.",
+      "unknown": "Der Clip konnte nicht erstellt werden. Versuche es erneut."
+    }
+  },
+  "jobs": {
+    "heading": "Clips aus dem Transkript",
+    "untitled": "Clip {start}–{end}",
+    "view": "Ansehen",
+    "retry": "Erneut versuchen",
+    "dismiss": "Ausblenden",
+    "status": {
+      "queued": "Wartet",
+      "rendering": "Wird gerendert…",
+      "completed": "Zu den Clips hinzugefügt",
+      "failed": "Rendern fehlgeschlagen"
+    }
+  },
+  "moments": {
+    "heading": "Momente mit KI finden",
+    "presetsLabel": "Wonach suchen",
+    "presets": {
+      "viral": "Viral",
+      "quotes": "Zitate",
+      "stories": "Geschichten",
+      "advice": "Tipps",
+      "hot_takes": "Steile Thesen"
+    },
+    "promptPlaceholder": "Oder beschreibe es, z. B. Momente über Geld",
+    "find": "Suchen",
+    "inSelection": "Nur im ausgewählten Teil suchen ({start}–{end})",
+    "history": "Frühere Suchen",
+    "remove": "Diese Suche entfernen",
+    "searching": "Das Transkript wird gelesen. Das kann ein bis zwei Minuten dauern.",
+    "failed": "Die Suche ist fehlgeschlagen. Versuche es erneut.",
+    "none": "Keine Momente gefunden. Versuche eine andere Vorgabe oder Anfrage.",
+    "untitled": "Moment ohne Titel",
+    "seconds": "{seconds} s",
+    "check": "{title} auswählen",
+    "made": {
+      "queued": "Wartet aufs Rendern",
+      "rendering": "Wird gerendert",
+      "completed": "Bereits ein Clip"
+    },
+    "createOne": "Clip erstellen",
+    "selectAll": "Alle auswählen",
+    "selectNone": "Auswahl aufheben",
+    "createSelected": "{count, plural, =0 {Clips erstellen} one {# Clip erstellen} other {# Clips erstellen}}",
+    "queued": "{count, plural, one {# Clip wird gerendert.} other {# Clips werden gerendert.}} Sie erscheinen bei deinen Clips, sobald sie fertig sind.",
+    "errors": {
+      "empty": "Wähle eine Vorgabe oder beschreibe, was du suchst.",
+      "invalid_preset": "Wähle eine der Vorgaben.",
+      "invalid_range": "In dieser Auswahl kann nicht gesucht werden.",
+      "range_too_short": "Wähle mindestens 30 Sekunden zum Durchsuchen aus.",
+      "busy": "Es läuft bereits eine Suche. Warte, bis sie fertig ist.",
+      "daily_limit": "Du hast das heutige Limit für KI-Suchen erreicht.",
+      "no_transcript": "Für dieses Video ist kein Transkript gespeichert.",
+      "task_busy": "Warte, bis dieses Video fertig verarbeitet ist.",
+      "queue_unavailable": "Die KI-Suche ist gerade nicht verfügbar. Versuche es in einer Minute erneut.",
+      "unknown": "Die Suche konnte nicht starten. Versuche es erneut."
+    }
+  }
+}

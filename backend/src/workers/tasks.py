@@ -332,6 +332,7 @@ from ..services.clip_export_service import (
     export_clip_preset,
 )
 from ..services.social_service import PUBLISH_JOB_TIMEOUT_SECONDS
+from ..services.range_clip_service import create_range_clip
 
 # Worker configuration for arq
 class WorkerSettings:
@@ -358,6 +359,8 @@ class WorkerSettings:
         # Results are not kept so a finished job's id ("social:{post}:{attempt}")
         # frees up; a dead job's post is failed by the stale-publishing sweep.
         func(publish_social_post, timeout=PUBLISH_JOB_TIMEOUT_SECONDS, keep_result=0),
+        # One try: a lost render reads as failed once its row goes stale.
+        func(create_range_clip, timeout=3600, max_tries=1, keep_result=0),
     ]
     queue_name = "supoclip_tasks"
     health_check_interval = 30

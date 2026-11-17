@@ -46,6 +46,8 @@ import { cn } from "@/lib/utils";
 import { Panel, ToolButton } from "./studio-ui";
 import { TextLayers } from "./text-layers";
 import { usePreviewResolution } from "./use-preview-resolution";
+import { useMusicPlayback } from "./use-music-playback";
+import { musicOf } from "@/lib/editor/music";
 
 interface Props {
   doc: EditDocument;
@@ -83,7 +85,8 @@ export function Preview({
   const pictureRef = useRef<HTMLDivElement>(null);
   const [previewWidth, setPreviewWidth] = useState(270);
   const canvasRef = useRef<HTMLCanvasElement>(null),
-    audioRef = useRef<{ context: AudioContext; gain: GainNode } | null>(null);
+    // The clip's own sound (gain is null without an audio track) and the music share one context.
+    audioRef = useRef<{ context: AudioContext; gain: GainNode | null } | null>(null);
   // One hidden, muted player per stock video, kept in step with the clip.
   const brollPlayers = useRef(new Map<string, HTMLVideoElement>());
   const footage = [
@@ -124,15 +127,18 @@ export function Preview({
       video.pause();
       return;
     }
-    if (!audioRef.current && asset.hasAudio) {
+    if (!audioRef.current && (asset.hasAudio || musicOf(doc).length > 0)) {
       const context = new AudioContext();
-      const gain = context.createGain();
-      context.createMediaElementSource(video).connect(gain);
-      gain.connect(context.destination);
+      let gain: GainNode | null = null;
+      if (asset.hasAudio) {
+        gain = context.createGain();
+        context.createMediaElementSource(video).connect(gain);
+        gain.connect(context.destination);
+      }
       audioRef.current = { context, gain };
     }
     if (audioRef.current) {
-      audioRef.current.gain.gain.value = doc.muted ? 0 : doc.volume;
+      if (audioRef.current.gain) audioRef.current.gain.gain.value = doc.muted ? 0 : doc.volume;
       await audioRef.current.context.resume();
     }
     const s = doc.segments[segmentIndex];
@@ -151,9 +157,10 @@ export function Preview({
       video.muted = doc.muted;
       video.playbackRate = rate;
     }
-    if (audioRef.current)
+    if (audioRef.current?.gain)
       audioRef.current.gain.gain.value = doc.muted ? 0 : doc.volume;
   }, [doc.volume, doc.muted, rate, videoRef]);
+  useMusicPlayback(doc, videoRef, segmentIndex, audioRef);
   useEffect(() => {
     const video = videoRef.current;
     if (video) {

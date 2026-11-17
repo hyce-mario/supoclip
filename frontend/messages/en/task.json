@@ -283,5 +283,10 @@
       "bumps": "A few bumps along the way. We're working through them—just a little more time.",
       "slower": "Things are moving a bit slower than usual. We're still on it."
     }
+  },
+  "views": {
+    "clips": "Clips",
+    "transcript": "Transcript",
+    "label": "View"
   }
 }

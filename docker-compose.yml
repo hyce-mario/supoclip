@@ -135,6 +135,7 @@ services:
       - clips:/app/clips
       - ./backend/fonts:/app/fonts
       - ./backend/transitions:/app/transitions
+      - ./backend/music:/app/music
     environment:
       - PYTHONPATH=/app
       - PYTHONUNBUFFERED=1
@@ -338,6 +339,7 @@ services:
       - clips:/app/clips
       - ./backend/fonts:/app/fonts
       - ./backend/transitions:/app/transitions
+      - ./backend/music:/app/music
     environment: &worker-environment
       - PYTHONPATH=/app
       - PYTHONUNBUFFERED=1
@@ -521,6 +523,7 @@ services:
       - clips:/app/clips
       - ./backend/fonts:/app/fonts
       - ./backend/transitions:/app/transitions
+      - ./backend/music:/app/music
     environment: *worker-environment
     restart: unless-stopped
     depends_on:

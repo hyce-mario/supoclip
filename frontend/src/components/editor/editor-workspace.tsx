@@ -1,4 +1,5 @@
 "use client";
+import { FeatureTourHost } from "@/components/feature-tour";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -137,6 +138,7 @@ export function EditorWorkspace({
   const [selected, setSelected] = useState<string[]>([]),
     [combining, setCombining] = useState(false);
   const [brollId, setBrollId] = useState<string | null>(null);
+  const [musicId, setMusicId] = useState<string | null>(null);
   const [clipsOpen, setClipsOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const index = doc ? Math.min(segmentIndex, doc.segments.length - 1) : 0;
@@ -158,6 +160,10 @@ export function EditorWorkspace({
   const selectBroll = useCallback((id: string | null) => {
     setBrollId(id);
     if (id) setTab("broll");
+  }, []);
+  const selectMusic = useCallback((id: string | null) => {
+    setMusicId(id);
+    if (id) setTab("audio");
   }, []);
   const switchClip = async (id: string) => {
     if (id === clip.id) return;
@@ -317,6 +323,10 @@ export function EditorWorkspace({
         event.preventDefault();
         editor.update((d) => ({ ...d, broll: (d.broll ?? []).filter((b) => b.id !== brollId) }));
         setBrollId(null);
+      } else if ((key === "delete" || key === "backspace") && musicId) {
+        event.preventDefault();
+        editor.update((d) => ({ ...d, music: (d.music ?? []).filter((m) => m.id !== musicId) }));
+        setMusicId(null);
       }
       if (key === "?") setHelpOpen(true);
     };
@@ -324,6 +334,7 @@ export function EditorWorkspace({
     return () => window.removeEventListener("keydown", handle);
   }, [
     brollId,
+    musicId,
     asset,
     doc,
     editor,
@@ -655,6 +666,8 @@ export function EditorWorkspace({
                 endpoint={endpoint}
                 brollId={brollId}
                 selectBroll={selectBroll}
+                musicId={musicId}
+                selectMusic={selectMusic}
               />
             </div>
           </>
@@ -683,8 +696,9 @@ export function EditorWorkspace({
           </Panel>
         )}
       </div>
+      {doc && asset?.status === "ready" && <FeatureTourHost enabled busy={false} />}
       {doc && asset?.status === "ready" && (
-        <div className={cn("shrink-0 p-2 lg:h-[252px]", doc.hookTitle?.trim() && "lg:h-[284px]")}>
+        <div className={cn("shrink-0 p-2 lg:h-[288px]", doc.hookTitle?.trim() && "lg:h-[320px]")}>
           <Timeline
             pause={() => videoRef.current?.pause()}
             doc={doc}
@@ -700,6 +714,9 @@ export function EditorWorkspace({
             selectBroll={selectBroll}
             seekBroll={seekSource}
             addBroll={() => setTab("broll")}
+            musicId={musicId}
+            selectMusic={selectMusic}
+            addMusic={() => setTab("audio")}
           />
         </div>
       )}

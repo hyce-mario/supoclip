@@ -207,7 +207,8 @@
       "hideCaptions": "Sembunyikan caption",
       "showCaptions": "Tampilkan caption",
       "mute": "Bisukan",
-      "unmute": "Bunyikan"
+      "unmute": "Bunyikan",
+      "music": "Musik"
     },
     "hookStart": "Awal judul, detik",
     "hookEnd": "Akhir judul, detik"
@@ -402,5 +403,50 @@
     "backupsNothing": "Tidak ada yang bisa dihapus. Perubahan yang belum tersimpan tetap ada sampai masuk ke akunmu.",
     "backupsBrowserNote": "Menghapus data situs SupoClip di browser ini juga menghapus salinan ini dan membuatmu keluar. Lakukan hanya jika semua klip yang terbuka menampilkan “Semua perubahan tersimpan”.",
     "done": "Selesai"
+  },
+  "music": {
+    "title": "Musik latar",
+    "description": "Musik diputar di seluruh hasil edit, meski kamu memotong klip.",
+    "duck": "Kecilkan musik saat ada yang bicara",
+    "duckHint": "Musik mengecil saat ada suara dan naik lagi saat jeda.",
+    "untitled": "Trek tanpa judul",
+    "pieceRange": "Diputar {start}–{end}",
+    "deselect": "Tutup",
+    "volume": "Volume musik",
+    "fadeIn": "Fade in",
+    "fadeOut": "Fade out",
+    "offset": "Mulai lagu dari",
+    "loop": "Ulangi untuk mengisi klip",
+    "remove": "Hapus musik",
+    "libraryTitle": "Pustaka musik",
+    "libraryDescription": "Trek ditambahkan di posisi playhead ({time}).",
+    "search": "Cari musik",
+    "categories": "Kategori musik",
+    "allCategories": "Semua",
+    "loadFailed": "Musik tidak dapat dimuat.",
+    "retry": "Coba lagi",
+    "libraryEmpty": "Pustaka musik kosong. Unggah trek milikmu di bawah, atau tambahkan file ke folder musik server.",
+    "noMatches": "Tidak ada trek yang cocok.",
+    "uploadsTitle": "Trek kamu",
+    "uploadsDescription": "Unggah lagu atau suara yang boleh kamu gunakan (maks. 30 MB).",
+    "upload": "Unggah",
+    "uploadsEmpty": "Belum ada trek yang diunggah.",
+    "preview": "Dengarkan {title}",
+    "stopPreview": "Hentikan {title}",
+    "deleteUpload": "Hapus {title}",
+    "add": "Tambah",
+    "added": "{title} ditambahkan",
+    "uploaded": "{title} diunggah",
+    "laneLabel": "Trek musik",
+    "pieceLabel": "{title}, {start} sampai {end}",
+    "laneEmpty": "Klik untuk menambahkan musik latar",
+    "errors": {
+      "too_large": "Trek maksimal 30 MB.",
+      "not_audio": "File itu tidak memiliki audio yang bisa dipakai.",
+      "too_many": "Jumlah trek sudah maksimal. Hapus satu dulu.",
+      "storage": "Penyimpanan tidak tersedia. Coba lagi.",
+      "unknown": "Unggahan gagal. Coba lagi.",
+      "delete": "Trek tidak dapat dihapus."
+    }
   }
 }

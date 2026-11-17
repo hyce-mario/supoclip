@@ -207,7 +207,8 @@
       "hideCaptions": "Hide captions",
       "showCaptions": "Show captions",
       "mute": "Mute",
-      "unmute": "Unmute"
+      "unmute": "Unmute",
+      "music": "Music"
     },
     "hookStart": "Title start, seconds",
     "hookEnd": "Title end, seconds"
@@ -402,5 +403,50 @@
     "backupsNothing": "Nothing to remove. Unsaved changes stay until they reach your account.",
     "backupsBrowserNote": "Clearing this browser's site data for SupoClip also removes these copies and signs you out. Only do that once every open clip says “All changes saved”.",
     "done": "Done"
+  },
+  "music": {
+    "title": "Background music",
+    "description": "Music plays across the whole edit, even where you cut the clip.",
+    "duck": "Lower music while someone speaks",
+    "duckHint": "The music dips under speech and comes back up in pauses.",
+    "untitled": "Untitled track",
+    "pieceRange": "Plays {start}–{end}",
+    "deselect": "Close",
+    "volume": "Music volume",
+    "fadeIn": "Fade in",
+    "fadeOut": "Fade out",
+    "offset": "Start in the song at",
+    "loop": "Loop to fill the clip",
+    "remove": "Remove music",
+    "libraryTitle": "Music library",
+    "libraryDescription": "Tracks are added at the playhead ({time}).",
+    "search": "Search music",
+    "categories": "Music categories",
+    "allCategories": "All",
+    "loadFailed": "The music couldn't be loaded.",
+    "retry": "Try again",
+    "libraryEmpty": "The music library is empty. Upload your own tracks below, or add files to the server's music folder.",
+    "noMatches": "No tracks match.",
+    "uploadsTitle": "Your tracks",
+    "uploadsDescription": "Upload songs or sounds you have the rights to use (up to 30 MB).",
+    "upload": "Upload",
+    "uploadsEmpty": "No tracks uploaded yet.",
+    "preview": "Preview {title}",
+    "stopPreview": "Stop {title}",
+    "deleteUpload": "Delete {title}",
+    "add": "Add",
+    "added": "Added {title}",
+    "uploaded": "Uploaded {title}",
+    "laneLabel": "Music track",
+    "pieceLabel": "{title}, {start} to {end}",
+    "laneEmpty": "Click to add background music",
+    "errors": {
+      "too_large": "Tracks can be at most 30 MB.",
+      "not_audio": "That file has no audio we can use.",
+      "too_many": "You have the maximum number of tracks. Delete one first.",
+      "storage": "Storage is unavailable. Try again.",
+      "unknown": "The upload failed. Try again.",
+      "delete": "The track couldn't be deleted."
+    }
   }
 }

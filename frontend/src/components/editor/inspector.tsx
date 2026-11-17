@@ -50,6 +50,7 @@ import {
 import { cn } from "@/lib/utils";
 import { editorMessage, Field, Panel, Range, Section } from "./studio-ui";
 import { BRollPanel } from "./broll-panel";
+import { MusicPanel } from "./music-panel";
 export type InspectorTab = "captions" | "framing" | "broll" | "audio" | "effects";
 
 const TABS = [
@@ -123,6 +124,8 @@ interface Props {
   endpoint: string;
   brollId: string | null;
   selectBroll: (id: string | null) => void;
+  musicId: string | null;
+  selectMusic: (id: string | null) => void;
 }
 export function Inspector({
   doc,
@@ -137,6 +140,8 @@ export function Inspector({
   endpoint,
   brollId,
   selectBroll,
+  musicId,
+  selectMusic,
 }: Props) {
   const t = useTranslations("editor");
   const activeCaption = captionAt(doc, editTime);
@@ -817,6 +822,7 @@ export function Inspector({
                 </p>
               )}
             </Section>
+            <MusicPanel doc={doc} update={update} editTime={editTime} selected={musicId} select={selectMusic} />
           </TabsContent>
           <TabsContent value="effects" className="space-y-6 p-4">
             <Section

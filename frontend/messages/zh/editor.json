@@ -207,7 +207,8 @@
       "hideCaptions": "隐藏字幕",
       "showCaptions": "显示字幕",
       "mute": "静音",
-      "unmute": "取消静音"
+      "unmute": "取消静音",
+      "music": "音乐"
     },
     "hookStart": "标题开始时间（秒）",
     "hookEnd": "标题结束时间（秒）"
@@ -402,5 +403,50 @@
     "backupsNothing": "没有可移除的内容。未保存的更改会保留到它们保存到你的账户为止。",
     "backupsBrowserNote": "清除此浏览器中 SupoClip 的网站数据也会删除这些副本并让你退出登录。请仅在所有打开的片段都显示“所有更改已保存”后再这样做。",
     "done": "完成"
+  },
+  "music": {
+    "title": "背景音乐",
+    "description": "音乐贯穿整个剪辑，即使你剪切了片段也不会中断。",
+    "duck": "有人说话时降低音乐",
+    "duckHint": "说话时音乐会自动变小，停顿时恢复。",
+    "untitled": "未命名曲目",
+    "pieceRange": "播放 {start}–{end}",
+    "deselect": "关闭",
+    "volume": "音乐音量",
+    "fadeIn": "淡入",
+    "fadeOut": "淡出",
+    "offset": "从歌曲的此处开始",
+    "loop": "循环以填满片段",
+    "remove": "移除音乐",
+    "libraryTitle": "音乐库",
+    "libraryDescription": "曲目会添加在播放头位置（{time}）。",
+    "search": "搜索音乐",
+    "categories": "音乐分类",
+    "allCategories": "全部",
+    "loadFailed": "无法加载音乐。",
+    "retry": "重试",
+    "libraryEmpty": "音乐库是空的。请在下方上传你自己的曲目，或把文件放入服务器的音乐文件夹。",
+    "noMatches": "没有匹配的曲目。",
+    "uploadsTitle": "你的曲目",
+    "uploadsDescription": "上传你有权使用的歌曲或音效（最大 30 MB）。",
+    "upload": "上传",
+    "uploadsEmpty": "还没有上传曲目。",
+    "preview": "试听 {title}",
+    "stopPreview": "停止 {title}",
+    "deleteUpload": "删除 {title}",
+    "add": "添加",
+    "added": "已添加 {title}",
+    "uploaded": "已上传 {title}",
+    "laneLabel": "音乐轨道",
+    "pieceLabel": "{title}，{start} 至 {end}",
+    "laneEmpty": "点击添加背景音乐",
+    "errors": {
+      "too_large": "曲目最大 30 MB。",
+      "not_audio": "该文件没有可用的音频。",
+      "too_many": "曲目数量已达上限，请先删除一个。",
+      "storage": "存储暂不可用，请重试。",
+      "unknown": "上传失败，请重试。",
+      "delete": "无法删除该曲目。"
+    }
   }
 }

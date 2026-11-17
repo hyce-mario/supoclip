@@ -1,4 +1,4 @@
-"""ARQ worker for AI editing.
+"""ARQ worker for AI editing and transcript moment searches.
 
 Runs on its own queue and container so a creator's edit request answers in
 seconds even while the main worker is busy rendering. It imports only the
@@ -22,6 +22,7 @@ from ..services.ai_edit_service import (  # noqa: E402
     AI_EDIT_TIMEOUT_SECONDS,
     ai_edit_job,
 )
+from ..services.moments_service import MOMENTS_JOB_TIMEOUT_SECONDS, find_moments_job  # noqa: E402
 
 configure_logging()
 
@@ -29,7 +30,11 @@ configure_logging()
 class AIWorkerSettings:
     config = Config()
     # One try: the browser shows the failure and the creator can resend.
-    functions = [func(ai_edit_job, timeout=AI_EDIT_TIMEOUT_SECONDS * 3, max_tries=1, keep_result=0)]
+    functions = [
+        func(ai_edit_job, timeout=AI_EDIT_TIMEOUT_SECONDS * 3, max_tries=1, keep_result=0),
+        # Transcript reader "find moments": same one-try rule, the panel offers a retry.
+        func(find_moments_job, timeout=MOMENTS_JOB_TIMEOUT_SECONDS, max_tries=1, keep_result=0),
+    ]
     queue_name = AI_EDIT_QUEUE
     redis_settings = RedisSettings(
         host=config.redis_host, port=config.redis_port, password=config.redis_password, database=0

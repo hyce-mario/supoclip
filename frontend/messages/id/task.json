@@ -283,5 +283,10 @@
       "bumps": "Ada beberapa rintangan di perjalanan. Sedang kami atasi—butuh sedikit waktu lagi.",
       "slower": "Prosesnya sedikit lebih lambat dari biasanya. Kami masih mengerjakannya."
     }
+  },
+  "views": {
+    "clips": "Klip",
+    "transcript": "Transkrip",
+    "label": "Tampilan"
   }
 }

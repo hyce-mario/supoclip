@@ -283,5 +283,10 @@
       "bumps": "Alguns solavancos pelo caminho. Estamos resolvendo—só mais um pouquinho de tempo.",
       "slower": "As coisas estão um pouco mais lentas que o normal. Seguimos trabalhando."
     }
+  },
+  "views": {
+    "clips": "Clipes",
+    "transcript": "Transcrição",
+    "label": "Visualização"
   }
 }

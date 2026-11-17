@@ -67,6 +67,24 @@ export const FEATURE_TOURS: readonly FeatureTour[] = [
     ],
   },
   {
+    id: "transcript-reader",
+    releasedAt: "2026-11-16T00:00:00Z",
+    steps: [
+      { target: "task-transcript-tab", message: "intro", side: "bottom", intro: true },
+      { target: "task-transcript-tab", message: "open", side: "bottom" },
+      { target: "transcript-selection", message: "select", side: "right" },
+      { target: "transcript-moments", message: "moments", side: "right" },
+    ],
+  },
+  {
+    id: "editor-music",
+    releasedAt: "2026-11-16T00:00:00Z",
+    steps: [
+      { target: "editor-music-lane", message: "intro", side: "top", intro: true },
+      { target: "editor-music-lane", message: "lane", side: "top" },
+    ],
+  },
+  {
     id: "composer-settings",
     releasedAt: "2026-11-06T00:00:00Z",
     steps: [{ target: "composer-settings", message: "settings", side: "top" }],

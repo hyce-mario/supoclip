@@ -1,0 +1,135 @@
+{
+  "player": {
+    "unavailable": "无法在此播放原视频，但你仍可以阅读和选择文字稿。",
+    "embedFailed": "此视频无法在 SupoClip 内播放。",
+    "openYouTube": "在 YouTube 打开",
+    "loadFailed": "无法加载原视频。"
+  },
+  "reader": {
+    "label": "文字稿",
+    "follow": "跟随播放",
+    "playFrom": "从 {time} 开始播放",
+    "speaker": "说话人 {name}",
+    "clipped": "已在片段中",
+    "clipBadge": "片段 {number}"
+  },
+  "selection": {
+    "emptyTitle": "选择文字稿的一部分",
+    "hints": {
+      "click": "点击某个词，从该处开始播放",
+      "drag": "拖动选择一段文字",
+      "double": "双击选择一句话",
+      "triple": "三击选择一段（按住 Shift 点击可扩展选择）"
+    },
+    "seconds": "{seconds} 秒",
+    "clear": "清除选择",
+    "play": "播放",
+    "snap": "对齐到整句",
+    "copy": "复制文字",
+    "copied": "文字已复制",
+    "warnings": {
+      "tooShort": "太短，无法生成片段（至少 3 秒）。",
+      "short": "短于 10 秒的片段通常表现不佳。",
+      "tooLong": "太长，无法生成片段（最多 3 分钟）。"
+    }
+  },
+  "search": {
+    "placeholder": "搜索文字稿",
+    "none": "无匹配结果",
+    "count": "第 {current} 个，共 {total} 个",
+    "previous": "上一个匹配",
+    "next": "下一个匹配",
+    "select": "选择"
+  },
+  "legend": {
+    "clipped": "已从此视频生成 {count} 个片段"
+  },
+  "states": {
+    "retry": "重试",
+    "notReady": {
+      "title": "文字稿尚未就绪",
+      "body": "视频转写完成后会显示在这里。"
+    },
+    "missing": {
+      "title": "此视频没有文字稿",
+      "body": "此视频在保存文字稿功能上线前已处理。重新生成即可阅读其文字稿。"
+    },
+    "error": {
+      "title": "无法加载文字稿",
+      "body": "请检查网络连接后重试。"
+    }
+  },
+  "create": {
+    "button": "创建片段",
+    "titleLabel": "吸睛标题（可选）",
+    "titlePlaceholder": "吸睛标题（可选）",
+    "queued": "正在渲染片段，完成后会出现在你的片段列表中。",
+    "errors": {
+      "too_short": "请至少选择 3 秒。",
+      "too_long": "最多只能选择 3 分钟。",
+      "out_of_bounds": "该范围超出了视频结尾。",
+      "invalid_range": "该选区无法生成片段。",
+      "too_many": "已有多个片段在渲染，请等待其中一个完成。",
+      "task_busy": "请等待此视频处理完成。",
+      "queue_unavailable": "渲染暂时不可用，请一分钟后再试。",
+      "unknown": "无法创建片段，请重试。"
+    }
+  },
+  "jobs": {
+    "heading": "来自文字稿的片段",
+    "untitled": "片段 {start}–{end}",
+    "view": "查看",
+    "retry": "重试",
+    "dismiss": "移除",
+    "status": {
+      "queued": "等待中",
+      "rendering": "渲染中…",
+      "completed": "已添加到片段",
+      "failed": "渲染失败"
+    }
+  },
+  "moments": {
+    "heading": "用 AI 查找精彩片段",
+    "presetsLabel": "要查找的内容",
+    "presets": {
+      "viral": "爆款",
+      "quotes": "金句",
+      "stories": "故事",
+      "advice": "建议",
+      "hot_takes": "犀利观点"
+    },
+    "promptPlaceholder": "或直接描述，例如：关于金钱的片段",
+    "find": "查找",
+    "inSelection": "仅在选中部分中查找（{start}–{end}）",
+    "history": "之前的查找",
+    "remove": "删除此次查找",
+    "searching": "正在阅读文字稿，可能需要一两分钟。",
+    "failed": "查找失败，请重试。",
+    "none": "未找到片段。试试其他类型或描述。",
+    "untitled": "未命名片段",
+    "seconds": "{seconds} 秒",
+    "check": "选择 {title}",
+    "made": {
+      "queued": "等待渲染",
+      "rendering": "渲染中",
+      "completed": "已生成片段"
+    },
+    "createOne": "创建片段",
+    "selectAll": "全选",
+    "selectNone": "清除",
+    "createSelected": "{count, plural, =0 {创建片段} other {创建 # 个片段}}",
+    "queued": "正在渲染 {count} 个片段，完成后会出现在你的片段列表中。",
+    "errors": {
+      "empty": "请选择一种类型或描述要查找的内容。",
+      "invalid_preset": "请选择其中一种类型。",
+      "invalid_range": "无法在该选区中查找。",
+      "range_too_short": "请至少选择 30 秒用于查找。",
+      "busy": "已有查找在进行中，请等待其完成。",
+      "daily_limit": "你已达到今天的 AI 查找次数上限。",
+      "no_transcript": "此视频没有保存文字稿。",
+      "task_busy": "请等待此视频处理完成。",
+      "queue_unavailable": "AI 查找暂时不可用，请一分钟后再试。",
+      "unknown": "无法开始查找，请重试。"
+    }
+  }
+}

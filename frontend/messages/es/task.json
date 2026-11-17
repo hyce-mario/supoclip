@@ -283,5 +283,10 @@
       "bumps": "Hay algunos baches en el camino. Los estamos superando—solo necesitamos un poco más de tiempo.",
       "slower": "Las cosas van un poco más despacio de lo habitual. Seguimos en ello."
     }
+  },
+  "views": {
+    "clips": "Clips",
+    "transcript": "Transcripción",
+    "label": "Vista"
   }
 }

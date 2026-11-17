@@ -11,6 +11,51 @@ import {
   type EditorState,
 } from "./document";
 import { drawEditorFrame, loadEditorFont, type BRollLayer } from "./render";
+import {
+  docSpeechSpans,
+  musicFileUrl,
+  musicGain,
+  musicOf,
+  musicPosition,
+  musicTrackKey,
+  type Span,
+} from "./music";
+import type { MusicClip } from "./document";
+
+const MUSIC_BLOCK = 128;
+
+/** Add the draft's music to interleaved samples that start at edit time `start`. */
+function mixMusic(
+  data: Float32Array,
+  channels: number,
+  rate: number,
+  start: number,
+  pieces: MusicClip[],
+  buffers: Map<string, AudioBuffer>,
+  spans: Span[],
+  total: number,
+) {
+  const frames = data.length / channels;
+  for (const piece of pieces) {
+    const buffer = buffers.get(musicTrackKey(piece.track));
+    if (!buffer) continue;
+    const sources = Array.from({ length: buffer.numberOfChannels }, (_, c) => buffer.getChannelData(c));
+    for (let block = 0; block < frames; block += MUSIC_BLOCK) {
+      const t = start + block / rate;
+      const gain = musicGain(piece, t, spans, total);
+      if (gain <= 0) continue;
+      let position = Math.round(musicPosition(piece, t) * buffer.sampleRate);
+      const last = Math.min(frames, block + MUSIC_BLOCK);
+      for (let f = block; f < last; f++, position++) {
+        if (position >= buffer.length) {
+          if (!piece.loop) break;
+          position = 0;
+        }
+        for (let c = 0; c < channels; c++) data[f * channels + c] += sources[c % sources.length][position] * gain;
+      }
+    }
+  }
+}
 
 export async function exportDraft(
   url: string,
@@ -30,9 +75,10 @@ export async function exportDraft(
     : (await m.canEncodeAudio("opus"))
       ? "opus"
       : null;
+  const music = musicOf(doc);
   if (
     !(await m.canEncodeVideo("avc", { ...size, bitrate })) ||
-    (asset.hasAudio && !audioCodec)
+    ((asset.hasAudio || music.length > 0) && !audioCodec)
   )
     throw new Error(
       "This browser cannot encode this video. Choose background export to render it on the server.",
@@ -91,10 +137,22 @@ export async function exportDraft(
       );
     const videoSource = new m.CanvasSource(canvas, { codec: "avc", bitrate });
     output.addVideoTrack(videoSource);
-    if (audio && !audioCodec)
+    if ((audio || music.length > 0) && !audioCodec)
       throw new Error("Audio encoding is unavailable. Use background export.");
+    // Music is decoded at the clip's own rate so its samples line up with the voice.
+    const sampleRate = audio ? await audio.getSampleRate() : 48_000;
+    const musicBuffers = new Map<string, AudioBuffer>();
+    for (const piece of music) {
+      const key = musicTrackKey(piece.track);
+      if (musicBuffers.has(key)) continue;
+      const response = await fetch(musicFileUrl(piece.track), { signal });
+      if (!response.ok) throw new Error("Could not load the music. Use background export.");
+      const decoder = new OfflineAudioContext(2, 1, sampleRate);
+      musicBuffers.set(key, await decoder.decodeAudioData(await response.arrayBuffer()));
+    }
+    const spans = docSpeechSpans(doc);
     const audioSource =
-      audio && audioCodec
+      (audio || music.length > 0) && audioCodec
         ? new m.AudioSampleSource({ codec: audioCodec, bitrate: 192_000 })
         : null;
     if (audioSource) output.addAudioTrack(audioSource);
@@ -162,8 +220,27 @@ export async function exportDraft(
       }
       videoSource.close();
     };
+    const renderMusicOnly = async () => {
+      if (!audioSource) return;
+      const channels = 2;
+      for (let start = 0; start < duration; start += 1) {
+        signal.throwIfAborted();
+        const frames = Math.round(Math.min(1, duration - start) * sampleRate);
+        if (frames <= 0) break;
+        const data = new Float32Array(frames * channels);
+        mixMusic(data, channels, sampleRate, start, music, musicBuffers, spans, duration);
+        const sample = new m.AudioSample({ data, format: "f32", numberOfChannels: channels, sampleRate, timestamp: start });
+        try {
+          await audioSource.add(sample);
+        } finally {
+          sample.close();
+        }
+      }
+      audioSource.close();
+    };
     const renderAudio = async () => {
-      if (!audio || !audioSource) return;
+      if (!audio) return renderMusicOnly();
+      if (!audioSource) return;
       let cursor = 0;
       for (const segment of doc.segments) {
         const sink = new m.AudioSampleSink(audio);
@@ -189,16 +266,15 @@ export async function exportDraft(
             );
             const gain = doc.muted ? 0 : doc.volume;
             for (let i = 0; i < data.length; i++) data[i] *= gain;
+            const timestamp = cursor + sample.timestamp + startFrame / sample.sampleRate - segment.start;
+            if (music.length > 0)
+              mixMusic(data, sample.numberOfChannels, sample.sampleRate, timestamp, music, musicBuffers, spans, duration);
             const next = new m.AudioSample({
               data,
               format: "f32",
               numberOfChannels: sample.numberOfChannels,
               sampleRate: sample.sampleRate,
-              timestamp:
-                cursor +
-                sample.timestamp +
-                startFrame / sample.sampleRate -
-                segment.start,
+              timestamp,
             });
             try {
               await audioSource.add(next);

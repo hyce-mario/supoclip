@@ -1,0 +1,135 @@
+{
+  "player": {
+    "unavailable": "Video asli tidak dapat diputar di sini, tetapi kamu tetap bisa membaca dan memilih transkrip.",
+    "embedFailed": "Video ini tidak dapat diputar di dalam SupoClip.",
+    "openYouTube": "Buka di YouTube",
+    "loadFailed": "Video asli tidak dapat dimuat."
+  },
+  "reader": {
+    "label": "Transkrip",
+    "follow": "Ikuti pemutaran",
+    "playFrom": "Putar dari {time}",
+    "speaker": "Pembicara {name}",
+    "clipped": "Sudah ada di klip",
+    "clipBadge": "Klip {number}"
+  },
+  "selection": {
+    "emptyTitle": "Pilih bagian transkrip",
+    "hints": {
+      "click": "Klik kata untuk memutar dari situ",
+      "drag": "Seret melewati kata untuk memilih frasa",
+      "double": "Klik dua kali untuk memilih kalimat",
+      "triple": "Klik tiga kali untuk memilih paragraf (Shift+klik memperluas)"
+    },
+    "seconds": "{seconds} dtk",
+    "clear": "Hapus pilihan",
+    "play": "Putar",
+    "snap": "Sesuaikan ke kalimat",
+    "copy": "Salin teks",
+    "copied": "Teks disalin",
+    "warnings": {
+      "tooShort": "Terlalu pendek untuk klip (minimal 3 detik).",
+      "short": "Klip di bawah 10 detik jarang berkinerja baik.",
+      "tooLong": "Terlalu panjang untuk klip (maksimal 3 menit)."
+    }
+  },
+  "search": {
+    "placeholder": "Cari di transkrip",
+    "none": "Tidak ada hasil",
+    "count": "{current} dari {total}",
+    "previous": "Hasil sebelumnya",
+    "next": "Hasil berikutnya",
+    "select": "Pilih"
+  },
+  "legend": {
+    "clipped": "{count} klip sudah dibuat dari video ini"
+  },
+  "states": {
+    "retry": "Coba lagi",
+    "notReady": {
+      "title": "Transkrip belum siap",
+      "body": "Transkrip muncul di sini setelah video selesai ditranskripsi."
+    },
+    "missing": {
+      "title": "Tidak ada transkrip untuk video ini",
+      "body": "Video ini diproses sebelum transkrip disimpan. Buat ulang untuk membaca transkripnya."
+    },
+    "error": {
+      "title": "Transkrip tidak dapat dimuat",
+      "body": "Periksa koneksimu lalu coba lagi."
+    }
+  },
+  "create": {
+    "button": "Buat klip",
+    "titleLabel": "Judul hook (opsional)",
+    "titlePlaceholder": "Judul hook (opsional)",
+    "queued": "Klip sedang dirender. Klip akan muncul di daftar klip setelah selesai.",
+    "errors": {
+      "too_short": "Pilih minimal 3 detik.",
+      "too_long": "Pilih maksimal 3 menit.",
+      "out_of_bounds": "Rentang itu melewati akhir video.",
+      "invalid_range": "Pilihan itu tidak bisa dijadikan klip.",
+      "too_many": "Beberapa klip sedang dirender. Tunggu salah satunya selesai.",
+      "task_busy": "Tunggu video ini selesai diproses.",
+      "queue_unavailable": "Render sedang tidak tersedia. Coba lagi sebentar lagi.",
+      "unknown": "Klip tidak dapat dibuat. Coba lagi."
+    }
+  },
+  "jobs": {
+    "heading": "Klip dari transkrip",
+    "untitled": "Klip {start}–{end}",
+    "view": "Lihat",
+    "retry": "Coba lagi",
+    "dismiss": "Tutup",
+    "status": {
+      "queued": "Menunggu",
+      "rendering": "Merender…",
+      "completed": "Ditambahkan ke klip",
+      "failed": "Gagal dirender"
+    }
+  },
+  "moments": {
+    "heading": "Temukan momen dengan AI",
+    "presetsLabel": "Yang dicari",
+    "presets": {
+      "viral": "Viral",
+      "quotes": "Kutipan",
+      "stories": "Cerita",
+      "advice": "Saran",
+      "hot_takes": "Opini panas"
+    },
+    "promptPlaceholder": "Atau jelaskan, mis. momen tentang uang",
+    "find": "Cari",
+    "inSelection": "Cari hanya di bagian terpilih ({start}–{end})",
+    "history": "Pencarian sebelumnya",
+    "remove": "Hapus pencarian ini",
+    "searching": "Membaca transkrip. Ini bisa memakan waktu satu atau dua menit.",
+    "failed": "Pencarian gagal. Coba lagi.",
+    "none": "Tidak ada momen ditemukan. Coba preset atau permintaan lain.",
+    "untitled": "Momen tanpa judul",
+    "seconds": "{seconds} dtk",
+    "check": "Pilih {title}",
+    "made": {
+      "queued": "Menunggu render",
+      "rendering": "Merender",
+      "completed": "Sudah jadi klip"
+    },
+    "createOne": "Buat klip",
+    "selectAll": "Pilih semua",
+    "selectNone": "Hapus pilihan",
+    "createSelected": "{count, plural, =0 {Buat klip} other {Buat # klip}}",
+    "queued": "Merender {count} klip. Klip akan muncul di daftar klip setelah selesai.",
+    "errors": {
+      "empty": "Pilih preset atau jelaskan yang ingin dicari.",
+      "invalid_preset": "Pilih salah satu preset.",
+      "invalid_range": "Pilihan itu tidak bisa dicari.",
+      "range_too_short": "Pilih minimal 30 detik untuk dicari.",
+      "busy": "Pencarian sedang berjalan. Tunggu sampai selesai.",
+      "daily_limit": "Kamu sudah mencapai batas harian pencarian AI.",
+      "no_transcript": "Tidak ada transkrip tersimpan untuk video ini.",
+      "task_busy": "Tunggu video ini selesai diproses.",
+      "queue_unavailable": "Pencarian AI sedang tidak tersedia. Coba lagi sebentar lagi.",
+      "unknown": "Pencarian tidak bisa dimulai. Coba lagi."
+    }
+  }
+}

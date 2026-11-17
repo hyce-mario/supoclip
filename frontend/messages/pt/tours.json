@@ -46,5 +46,33 @@
       "body": "Duração, legendas, enquadramento, limpeza e B-roll agora ficam em um só menu. Lembramos suas escolhas, então você só configura uma vez."
     }
   },
-  "skip": "Pular"
+  "skip": "Pular",
+  "transcript-reader": {
+    "intro": {
+      "title": "Leia seu vídeo e recorte qualquer parte",
+      "body": "A nova visualização de transcrição mostra tudo o que foi dito. Selecione uma expressão, frase ou parágrafo e transforme em clipe, ou peça à IA para encontrar os momentos que você quer."
+    },
+    "open": {
+      "title": "Abra a transcrição",
+      "body": "Alterne aqui entre seus clipes e a transcrição completa. Clique em qualquer palavra para tocar a partir dela."
+    },
+    "select": {
+      "title": "Transforme uma seleção em clipe",
+      "body": "Arraste sobre as palavras ou dê um duplo clique numa frase. Toque em Criar clipe: ele é renderizado com suas legendas e ajustes de sempre e entra nos clipes deste vídeo."
+    },
+    "moments": {
+      "title": "Deixe a IA encontrar momentos",
+      "body": "Escolha Virais, Frases, Histórias e mais, ou descreva o que quer, como “momentos sobre dinheiro”. Os resultados aparecem destacados na transcrição, prontos para criar."
+    }
+  },
+  "editor-music": {
+    "intro": {
+      "title": "Chegou a música de fundo",
+      "body": "Adicione música a qualquer clipe: da biblioteca ou das suas faixas, com volume, fades e redução automática quando alguém fala."
+    },
+    "lane": {
+      "title": "A faixa de música",
+      "body": "Clique na faixa para escolher uma música. Arraste um trecho para movê-lo, as bordas para cortar, e selecione-o para ajustar volume e fades."
+    }
+  }
 }

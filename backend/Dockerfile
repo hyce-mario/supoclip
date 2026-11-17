@@ -48,6 +48,7 @@ COPY src/ ./src/
 # Copy fonts and transitions directories
 COPY fonts/ ./fonts/
 COPY transitions/ ./transitions/
+COPY music/ ./music/
 
 # Create necessary directories for video processing
 RUN mkdir -p /app/uploads /app/clips /app/logs /tmp

@@ -450,6 +450,41 @@ async def document_footage(document: EditDocument) -> dict:
     return files
 
 
+async def document_music(document: EditDocument, user_id: str | None) -> dict:
+    """Local files for a draft's music, keyed by ``editor_music.music_key``.
+
+    Uploads are looked up for the clip's owner only; missing tracks are skipped
+    (the export plays without them) rather than failing it.
+    """
+    from sqlalchemy import text as sql_text
+
+    from .. import music_library
+    from ..database import AsyncSessionLocal
+    from ..editor_music import music_key
+
+    files = {}
+    for piece in document.music:
+        key = music_key(piece.track.source, piece.track.id)
+        if key in files:
+            continue
+        path = None
+        if piece.track.source == "library":
+            path = await run_in_thread(music_library.library_path, piece.track.id)
+        elif user_id:
+            async with AsyncSessionLocal() as db:
+                reference = (await db.execute(
+                    sql_text("SELECT reference FROM user_music_tracks WHERE id = :id AND user_id = :user_id"),
+                    {"id": piece.track.id, "user_id": user_id},
+                )).scalar_one_or_none()
+            if reference:
+                path = await run_in_thread(music_library.local_upload, reference, piece.track.id)
+        if path is None:
+            logging.getLogger(__name__).warning("Music track %s unavailable for export", key)
+            continue
+        files[key] = path
+    return files
+
+
 def upgrade_document(
     document: dict,
     clip: dict,
@@ -947,6 +982,14 @@ async def export_editor(ctx, task_id: str, clip_id: str, filename: str, job_id: 
                 version=session["asset"].get("mediaVersion"),
             )
             broll_files = await document_footage(document)
+            extra = {}
+            if document.music:
+                owner = None
+                if any(piece.track.source == "upload" for piece in document.music):
+                    async with AsyncSessionLocal() as db:
+                        task = await TaskService(db).task_repo.get_task_by_id(db, task_id)
+                    owner = (task or {}).get("user_id")
+                extra["music_files"] = await document_music(document, owner)
             await run_in_thread(
                 render_document,
                 directory,
@@ -954,6 +997,7 @@ async def export_editor(ctx, task_id: str, clip_id: str, filename: str, job_id: 
                 document,
                 payload["preset"],
                 broll_files,
+                **extra,
                 should_cancel=render.stop.is_set,
                 on_progress=render.report,
             )
@@ -1082,6 +1126,8 @@ async def combine_editor(ctx, task_id: str, clip_id: str, filename: str, job_id:
             "captionTransforms": all_caption_transforms,
             # The first clip's headline doesn't describe the combination.
             "hookTitle": "",
+            # Music is timed to one draft's edit; the combination starts without it.
+            "music": [],
         }
         document = EditDocument.model_validate(initial).validate_duration(cursor)
         with tempfile.TemporaryDirectory(prefix="combine_", dir=directory) as temp:

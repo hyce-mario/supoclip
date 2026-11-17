@@ -207,7 +207,8 @@
       "hideCaptions": "Untertitel ausblenden",
       "showCaptions": "Untertitel einblenden",
       "mute": "Stumm",
-      "unmute": "Ton an"
+      "unmute": "Ton an",
+      "music": "Musik"
     },
     "hookStart": "Titelanfang, Sekunden",
     "hookEnd": "Titelende, Sekunden"
@@ -402,5 +403,50 @@
     "backupsNothing": "Nichts zu entfernen. Nicht gespeicherte Änderungen bleiben, bis sie in deinem Konto sind.",
     "backupsBrowserNote": "Wenn du die Websitedaten von SupoClip in diesem Browser löschst, werden auch diese Kopien entfernt und du wirst abgemeldet. Tu das erst, wenn jeder offene Clip „Alle Änderungen gespeichert“ anzeigt.",
     "done": "Fertig"
+  },
+  "music": {
+    "title": "Hintergrundmusik",
+    "description": "Die Musik läuft über den ganzen Schnitt, auch wo du den Clip kürzt.",
+    "duck": "Musik leiser, wenn jemand spricht",
+    "duckHint": "Die Musik wird bei Sprache leiser und in Pausen wieder lauter.",
+    "untitled": "Titel ohne Namen",
+    "pieceRange": "Läuft von {start} bis {end}",
+    "deselect": "Schließen",
+    "volume": "Musiklautstärke",
+    "fadeIn": "Einblenden",
+    "fadeOut": "Ausblenden",
+    "offset": "Song starten bei",
+    "loop": "Wiederholen, um den Clip zu füllen",
+    "remove": "Musik entfernen",
+    "libraryTitle": "Musikbibliothek",
+    "libraryDescription": "Titel werden am Abspielkopf eingefügt ({time}).",
+    "search": "Musik suchen",
+    "categories": "Musikkategorien",
+    "allCategories": "Alle",
+    "loadFailed": "Die Musik konnte nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "libraryEmpty": "Die Musikbibliothek ist leer. Lade unten eigene Titel hoch oder lege Dateien in den Musikordner des Servers.",
+    "noMatches": "Keine passenden Titel.",
+    "uploadsTitle": "Deine Titel",
+    "uploadsDescription": "Lade Songs oder Sounds hoch, die du nutzen darfst (bis 30 MB).",
+    "upload": "Hochladen",
+    "uploadsEmpty": "Noch keine Titel hochgeladen.",
+    "preview": "{title} anhören",
+    "stopPreview": "{title} stoppen",
+    "deleteUpload": "{title} löschen",
+    "add": "Hinzufügen",
+    "added": "{title} hinzugefügt",
+    "uploaded": "{title} hochgeladen",
+    "laneLabel": "Musikspur",
+    "pieceLabel": "{title}, {start} bis {end}",
+    "laneEmpty": "Klicken, um Hintergrundmusik hinzuzufügen",
+    "errors": {
+      "too_large": "Titel dürfen höchstens 30 MB groß sein.",
+      "not_audio": "Diese Datei enthält keinen nutzbaren Ton.",
+      "too_many": "Du hast die maximale Anzahl an Titeln. Lösche zuerst einen.",
+      "storage": "Der Speicher ist nicht verfügbar. Versuche es erneut.",
+      "unknown": "Das Hochladen ist fehlgeschlagen. Versuche es erneut.",
+      "delete": "Der Titel konnte nicht gelöscht werden."
+    }
   }
 }
